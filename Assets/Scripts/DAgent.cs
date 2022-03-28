@@ -77,6 +77,12 @@ public class DAgent
 
             Location = possible[rand.Next(0, possible.Count)];
         }
+        else if(_action == "pickup"){
+            if(location.IsPickup && !HasCargo){
+                location.Resources--;
+                HasCargo = true;
+            }
+        }
     }
 
     // Change occupancy of nodes when agent moves
