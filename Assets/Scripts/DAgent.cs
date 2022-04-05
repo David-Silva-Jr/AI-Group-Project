@@ -85,6 +85,8 @@ public class DAgent
         }
     }
 
+    // string GetAvailableActions() ?
+
     // Change occupancy of nodes when agent moves
     private void OnLocationChanged(object sender, PropertyChangedEventArgs<Node> e){
         if(e.oldValue != null){

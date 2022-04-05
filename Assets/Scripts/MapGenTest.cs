@@ -48,6 +48,9 @@ public class MapGenTest : MonoBehaviour
         fella = Instantiate(fellaPrefab, transform.position, Quaternion.identity);    
         Instantiate(fellaPrefab, transform.position, Quaternion.identity);
         Instantiate(fellaPrefab, transform.position, Quaternion.identity);    
+        Instantiate(fellaPrefab, transform.position, Quaternion.identity);  
+        Instantiate(fellaPrefab, transform.position, Quaternion.identity);  
+        Instantiate(fellaPrefab, transform.position, Quaternion.identity);  
     }
 
     public List<Node> Map{

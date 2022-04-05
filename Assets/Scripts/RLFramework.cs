@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public static class RLFramework
 {
-
+    
     // Returns the reward of a given action given a certain state
     public static int GetReward(State _state, string _action){
         if(_state.IsPickup && _action == "pickup" && !_state.AgentHasCargo){
