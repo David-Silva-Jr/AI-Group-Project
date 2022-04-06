@@ -3,7 +3,13 @@ guid: 091e952f7bba261489e749f9d2f01a26
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - groundPrefab: {fileID: 2548533662412538758, guid: 37ba1e38d318f824599f40bc4492e5af,
+      type: 3}
+  - maleAgentPrefab: {fileID: 3086611246731012101, guid: 547b93c32c23b764dac2bd030fc3d2b7,
+      type: 3}
+  - femaleAgentPrefab: {fileID: 3086611246731012101, guid: 6ead4bcdff645bc418e735f5151057cb,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

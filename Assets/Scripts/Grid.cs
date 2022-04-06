@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//[On Grid]
+//The Grid draws the entire grid (not just cells with ground)
 public class Grid : MonoBehaviour
 {
     [SerializeField] private int height;

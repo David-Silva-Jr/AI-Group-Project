@@ -2,12 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//[On cells]
+//The cell holds references to the grid objects on that cell (ground, agents, pickup/dropoff locations) 
+//which can then be passed to the more general GridManager
+//The cell also handles call from the GridManager to instantiate grid objects on that cell
+
 public class Cell : MonoBehaviour
 {
     private int posX;
     private int posY;
     [SerializeField] private GameObject groundPrefab;
-    [SerializeField] private GameObject agentPrefab;
+    [SerializeField] private GameObject pickupZonePrefab;
+    [SerializeField] private GameObject dropoffZonePrefab;
+    [SerializeField] private GameObject maleAgentPrefab;
+    [SerializeField] private GameObject femaleAgentPrefab;
 
     private readonly GameObject[] cellFeatures = new GameObject[2]; //Cell has 2 features Ground (0), Dropoff/Pickup zone(1)
     private GameObject agent;
@@ -69,14 +77,19 @@ public class Cell : MonoBehaviour
         Destroy(cellFeatures[1]);
     }
 
-    public GameObject PlaceAgent()
+    public GameObject PlaceAgent(string gender)
     {
         if (cellFeatures[0] != null && cellFeatures[0].transform.childCount == 4) //Place agent if there is ground and there isn't already an agent on that space
         {
-            //Create agent set its parent to current ground and set it's position to current cell
-            agent = Instantiate(agentPrefab, cellFeatures[0].transform.position , Quaternion.identity * Quaternion.AngleAxis(90, Vector3.right));
+            if(gender == "male")
+                //Create male agent set its parent to current ground and set it's position to current cell
+                agent = Instantiate(maleAgentPrefab, cellFeatures[0].transform.position, Quaternion.identity * Quaternion.AngleAxis(90, Vector3.right));
+            if (gender == "female")
+                //Create female agent set its parent to current ground and set it's position to current cell
+                agent = Instantiate(femaleAgentPrefab, cellFeatures[0].transform.position, Quaternion.identity * Quaternion.AngleAxis(90, Vector3.right));
             agent.transform.SetParent(cellFeatures[0].transform);
             agent.GetComponent<Agent>().SetPosition(posX, posY);
+            return agent;
         }
         return null;
     }
@@ -84,5 +97,29 @@ public class Cell : MonoBehaviour
     public void DeleteAgent()
     {
         Destroy(cellFeatures[0].transform.GetChild(4).gameObject);
+    }
+    public GameObject placePickupZone()
+    {
+        if (cellFeatures[0] != null && cellFeatures[1] == null) //Place zone if there's ground and no zone
+        {
+            cellFeatures[1] = Instantiate(pickupZonePrefab, transform.GetChild(0).GetComponent<Renderer>().bounds.center + Vector3.down * 3 + Vector3.back/10, Quaternion.identity);
+            return cellFeatures[1];
+        }
+        return null;
+    }
+
+    public GameObject placeDropoffZone()
+    {
+        if (cellFeatures[0] != null && cellFeatures[1] == null) //Place zone if there's ground and no zone
+        {
+            cellFeatures[1] = Instantiate(dropoffZonePrefab, transform.GetChild(0).GetComponent<Renderer>().bounds.center + Vector3.down * 3 + Vector3.back/10, Quaternion.identity);
+            return cellFeatures[1];
+        }
+        return null;
+    }
+
+    public void DeleteZone()
+    {
+        Destroy(cellFeatures[1]);
     }
 }
