@@ -3,10 +3,12 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+//[On WorldManager]
+//The time system is a tick based system that determine agent movement
 public class TimeSystem : MonoBehaviour
 {
     [SerializeField] private Text timer;
-    [SerializeField] private bool paused;
+    private bool paused = true;
 
     public class OnTickEventArgs: EventArgs
     {
