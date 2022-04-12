@@ -10,7 +10,7 @@ public class AgentVisualizer : MonoBehaviour
     private float t;
     private float moveTime;
 
-    private List<Node> map;
+    private List<Tile> map;
 
     private ALT_TimeSystem timer;
 
@@ -53,7 +53,7 @@ public class AgentVisualizer : MonoBehaviour
         agent.DoAction("random_move");
     }
 
-    private void OnAgentLocationChanged(object sender, DAgent.PropertyChangedEventArgs<Node> e){
+    private void OnAgentLocationChanged(object sender, DAgent.PropertyChangedEventArgs<Tile> e){
         t = 0;
         startPos = targetPos;
 

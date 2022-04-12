@@ -1,7 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 
-// This class should store everything that would be common between all the reinforcement learning paradigms we're using
+// This file should store everything that would be common between all the reinforcement learning paradigms we're using
+
+
+public class QTable{
+    Dictionary<string, float> table;
+
+
+    public float this[string s]{
+        get{return table[s];}
+    }
+}
 
 public static class RLFramework
 {

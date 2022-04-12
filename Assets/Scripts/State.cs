@@ -2,34 +2,34 @@
 using System.Collections.Generic;
 
 // May want to move this to RLFrameworks
-// Need some way to check equality between states (two states with the same agent and the same node should be the same)
+// Need some way to check equality between states (two states with the same agent and the same tile should be the same)
 public class State
 {
     private DAgent agent;   // The agent this state is relevant to
-    private Node node;      // Node this state concerns (not always the same as agent's location)
+    private Tile tile;      // Tile this state concerns (not always the same as agent's location)
     private float utility;  // Utility of the state
 
-    public State(DAgent _agent, Node _node, float _utility){
+    public State(DAgent _agent, Tile _tile, float _utility){
         agent = _agent;
-        node = _node;
+        tile = _tile;
         utility = _utility;
     }
 
-    public State(DAgent _agent, Node _node){
+    public State(DAgent _agent, Tile _tile){
         agent = _agent;
-        node = _node;
+        tile = _tile;
         utility = 0;
     }
 
     public State(DAgent _agent){
         agent = _agent;
-        node = agent.Location;
+        tile = agent.Location;
         utility = 0;
     }
 
     public State(DAgent _agent, float _utility){
         agent = _agent;
-        node = agent.Location;
+        tile = agent.Location;
         utility = 0;
     }
 
@@ -43,15 +43,15 @@ public class State
         get {return agent.HasCargo;}
     }
 
-    public Node CurrentNode{
-        get {return node;}
+    public Tile CurrentTile{
+        get {return tile;}
     }
 
     public bool IsPickup{
-        get {return node.IsPickup;}
+        get {return tile.IsPickup;}
     }
 
     public bool IsDropoff{
-        get {return node.IsDropoff;}
+        get {return tile.IsDropoff;}
     }
 }

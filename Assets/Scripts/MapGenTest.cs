@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MapGenTest : MonoBehaviour
 {
-    private List<Node> map = new List<Node>();
+    private List<Tile> map = new List<Tile>();
     [SerializeField] private int gridSize = 10;
     [SerializeField] private float cellSize = 1;
 
@@ -15,7 +15,7 @@ public class MapGenTest : MonoBehaviour
     private AgentVisualizer fella;
 
     private void Awake() {
-        List<Node> nodeList = new List<Node>();
+        List<Tile> TileList = new List<Tile>();
 
         if(cell == null){
             return;
@@ -23,19 +23,19 @@ public class MapGenTest : MonoBehaviour
 
         Vector3 pos = origin;
 
-        List<List<Node>> grid = new List<List<Node>>();
+        List<List<Tile>> grid = new List<List<Tile>>();
 
         for(int i = 0; i < gridSize; i++){
-            List<Node> temp = new List<Node>();
+            List<Tile> temp = new List<Tile>();
             for(int j = 0; j < gridSize; j++){
-                temp.Add(new Node(0));
+                temp.Add(new Tile(0));
                 if(j > 0){
-                    temp[j].AdjacentNodes.Add(temp[j-1]);
-                    temp[j-1].AdjacentNodes.Add(temp[j]);
+                    temp[j].AdjacentTiles.Add(temp[j-1]);
+                    temp[j-1].AdjacentTiles.Add(temp[j]);
                 }
                 if(i > 0){
-                    temp[j].AdjacentNodes.Add(grid[i-1][j]);
-                    grid[i-1][j].AdjacentNodes.Add(temp[j]);
+                    temp[j].AdjacentTiles.Add(grid[i-1][j]);
+                    grid[i-1][j].AdjacentTiles.Add(temp[j]);
                 }
 
                 Instantiate(cell, origin + new Vector3(i,0,j), Quaternion.identity).name = "Cell " + (i*gridSize+j);
@@ -53,7 +53,7 @@ public class MapGenTest : MonoBehaviour
         Instantiate(fellaPrefab, transform.position, Quaternion.identity);  
     }
 
-    public List<Node> Map{
+    public List<Tile> Map{
         get {return map;}
     }
 }

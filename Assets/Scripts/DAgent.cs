@@ -6,7 +6,7 @@ public class DAgent
 {
     private string name;   // To differentiate agents
     private bool hasCargo; // Is the agent carrying anything?
-    private Node location; // What node is the agent currently on?
+    private Tile location; // What tile is the agent currently on?
 
     // Set up event stuff for properties
     public class PropertyChangedEventArgs<T> : EventArgs{
@@ -20,11 +20,11 @@ public class DAgent
     }
 
     // Create events for property changes
-    public event EventHandler<PropertyChangedEventArgs<Node>> LocationChanged;
+    public event EventHandler<PropertyChangedEventArgs<Tile>> LocationChanged;
     public event EventHandler<PropertyChangedEventArgs<bool>> HasCargoChanged;
 
     // Constructor
-    public DAgent(string _name, Node _location){
+    public DAgent(string _name, Tile _location){
         name = _name;
         hasCargo = false;
 
@@ -33,7 +33,7 @@ public class DAgent
             location.Occupied = true;
         }
 
-        // Changing the Location property will automatically set occupancy of relevant nodes
+        // Changing the Location property will automatically set occupancy of relevant tiles
         LocationChanged += OnLocationChanged;
     }
 
@@ -46,16 +46,16 @@ public class DAgent
         }
     }
 
-    public Node Location{
+    public Tile Location{
         get {return location;}
         set {
-            LocationChanged?.Invoke(this, new PropertyChangedEventArgs<Node>(location, value));
+            LocationChanged?.Invoke(this, new PropertyChangedEventArgs<Tile>(location, value));
             location = value;
         }
     }
 
-    public List<Node> AdjacentLocations{
-        get {return location.AdjacentNodes;}
+    public List<Tile> AdjacentLocations{
+        get {return location.AdjacentTiles;}
     }
 
     public void DoAction(string _action){
@@ -63,9 +63,9 @@ public class DAgent
         // How do I make this generic enough to be used by any RL implementation?
         if(_action == "random_move"){
             Random rand = new Random(Guid.NewGuid().GetHashCode());
-            List<Node> possible = new List<Node>();
+            List<Tile> possible = new List<Tile>();
 
-            foreach (Node n in AdjacentLocations){
+            foreach (Tile n in AdjacentLocations){
                 if(!n.Occupied){
                     possible.Add(n);
                 }
@@ -87,8 +87,8 @@ public class DAgent
 
     // string GetAvailableActions() ?
 
-    // Change occupancy of nodes when agent moves
-    private void OnLocationChanged(object sender, PropertyChangedEventArgs<Node> e){
+    // Change occupancy of tiles when agent moves
+    private void OnLocationChanged(object sender, PropertyChangedEventArgs<Tile> e){
         if(e.oldValue != null){
             e.oldValue.Occupied = false;
         }
