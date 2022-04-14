@@ -1,57 +1,89 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 
 // May want to move this to RLFrameworks
 // Need some way to check equality between states (two states with the same agent and the same tile should be the same)
 public class State
 {
-    private DAgent agent;   // The agent this state is relevant to
-    private Tile tile;      // Tile this state concerns (not always the same as agent's location)
-    private float utility;  // Utility of the state
+    //     State string format: "i j Dm x s t u v"
+    // note that values are separated by spaces
+    private int pos_i;              // 'i'
+    private int pos_j;              // 'j'
+    private int manhattan_distance; // 'Dm' Manhattan distance between agents
+    private bool hasCargo;          // 'x' Is the agent holding anything?
+    private bool p1;                // 's' Is pickup location 1 active?
+    private bool p2;                // 't'
+    private bool d1;                // 'u' Is dropoff location 1 active?
+    private bool d2;                // 'v'
 
-    public State(DAgent _agent, Tile _tile, float _utility){
-        agent = _agent;
-        tile = _tile;
-        utility = _utility;
+    public State(){
+        pos_i = 0;
+        pos_j = 0;
+        manhattan_distance = 0;
+        hasCargo = false;
+        p1 = false;
+        p2 = false;
+        d1 = false;
+        d2 = false;
     }
 
-    public State(DAgent _agent, Tile _tile){
-        agent = _agent;
-        tile = _tile;
-        utility = 0;
+    public State(string state_as_string){
+        List<string> vals = new List<string>(state_as_string.Split(' '));
+
+        pos_i = int.Parse(vals[0]);
+        pos_j = int.Parse(vals[1]);
+        manhattan_distance = int.Parse(vals[2]);
+        hasCargo = vals[3] == "1" ? true : false;
+        p1 = vals[4] == "1" ? true : false;
+        p2 = vals[5] == "1" ? true : false;
+        d1 = vals[6] == "1" ? true : false;
+        d2 = vals[7] == "1" ? true : false;
     }
 
-    public State(DAgent _agent){
-        agent = _agent;
-        tile = agent.Location;
-        utility = 0;
+    public int I{
+        get{return pos_i;}
     }
 
-    public State(DAgent _agent, float _utility){
-        agent = _agent;
-        tile = agent.Location;
-        utility = 0;
+    public int J{
+        get{return pos_j;}
     }
 
-    public float Value{
-        get {return utility;}
-        set {utility = value;}
+    public int Manhattan_Distance{
+        get{return manhattan_distance;}
     }
 
-    // These are read only because you shouldn't be assigning anything but value directly to state
-    public bool AgentHasCargo{
-        get {return agent.HasCargo;}
+    public bool HasCargo{
+        get{return hasCargo;}
     }
 
-    public Tile CurrentTile{
-        get {return tile;}
+    public bool S{
+        get{return p1;}
     }
 
-    public bool IsPickup{
-        get {return tile.IsPickup;}
+    public bool T{
+        get{return p2;}
     }
 
-    public bool IsDropoff{
-        get {return tile.IsDropoff;}
+    public bool U{
+        get{return d1;}
+    }
+
+    public bool V{
+        get{return d2;}
+    }
+
+    public string As_String(){
+        string out_str = "";
+
+        out_str += pos_i + " ";
+        out_str += pos_j + " ";
+        out_str += manhattan_distance + " ";
+        out_str += (hasCargo ? "1" : "0");
+        out_str += (p1 ? "1" : "0");
+        out_str += (p2 ? "1" : "0");
+        out_str += (d1 ? "1" : "0");
+        out_str += (d2 ? "1" : "0");
+
+        return out_str;
     }
 }

@@ -6,7 +6,10 @@ public class DAgent
 {
     private string name;   // To differentiate agents
     private bool hasCargo; // Is the agent carrying anything?
-    private Tile location; // What tile is the agent currently on?
+    private Map world;     // The world the agent inhabits
+    private int pos_i;     // World row agent occupies
+    private int pos_j;     // World column agent occupies
+    private Tile location; // Current tile occupied by agent
 
     // Set up event stuff for properties
     public class PropertyChangedEventArgs<T> : EventArgs{
@@ -24,16 +27,18 @@ public class DAgent
     public event EventHandler<PropertyChangedEventArgs<bool>> HasCargoChanged;
 
     // Constructor
-    public DAgent(string _name, Tile _location){
+    public DAgent(Map _world, string _name, int _i, int _j){
         name = _name;
         hasCargo = false;
 
-        location = _location;
-        if(location != null){
-            location.Occupied = true;
-        }
+        world = _world;
 
-        // Changing the Location property will automatically set occupancy of relevant tiles
+        pos_i = _i;
+        pos_j = _j;
+
+        location = _world[_i, _j];
+        location.Occupied = false;
+
         LocationChanged += OnLocationChanged;
     }
 
@@ -46,46 +51,110 @@ public class DAgent
         }
     }
 
+    // Setting Row and Col will also change Location
+    public int Row{
+        get{return pos_i;}
+        set{
+            pos_i = value;
+            Location = world[Row, Col];
+        }
+    }
+
+    public int Col{
+        get{return pos_j;}
+        set{
+            pos_j = value;
+            Location = world[Row, Col];
+        }
+    }
+
+    //     Can only set Location from inside the class, moving the agent outside the class should be done by setting
+    // Row and Col
     public Tile Location{
         get {return location;}
-        set {
+        private set {
             LocationChanged?.Invoke(this, new PropertyChangedEventArgs<Tile>(location, value));
             location = value;
         }
     }
 
-    public List<Tile> AdjacentLocations{
-        get {return location.AdjacentTiles;}
+    // Allow outside functions to read the world from the agent
+    public Map World{
+        get {return world;}
     }
 
-    public void DoAction(string _action){
-        // Currently does random moves, but should be easy enough to modify to do directional (or at least targeted,) movement
-        // How do I make this generic enough to be used by any RL implementation?
-        if(_action == "random_move"){
-            Random rand = new Random(Guid.NewGuid().GetHashCode());
-            List<Tile> possible = new List<Tile>();
+    // public List<Tile> AdjacentLocations{
+    //     get {return location.AdjacentTiles;}
+    // }
 
-            foreach (Tile n in AdjacentLocations){
-                if(!n.Occupied){
-                    possible.Add(n);
-                }
-            }
+    public void MoveTo(int _i, int _j){
+        pos_i = _i;
+        pos_j = _j;
+        
+        Location = world[_i, _j];
+    }
 
-            if(possible.Count == 0){
-                return;
-            }
-
-            Location = possible[rand.Next(0, possible.Count)];
+    public void DoAction(char _action){
+        if(_action == 'n'){
+            Row -= 1;
         }
-        else if(_action == "pickup"){
+
+        if(_action == 'e'){
+            Col += 1;
+        }
+
+        if(_action == 's'){
+            Row += 1;
+        }
+
+        if(_action == 'w'){
+            Col -= 1;
+        }
+
+        if(_action == 'p'){
             if(location.IsPickup && !HasCargo){
                 location.Resources--;
                 HasCargo = true;
             }
         }
+
+        if(_action == 'd'){
+            if(location.IsDropoff && HasCargo){
+                location.Resources++;
+                HasCargo = false;
+            }
+        }
     }
 
-    // string GetAvailableActions() ?
+    public List<char> GetAvailableActions(){
+        List<char> available = new List<char>();
+
+        if(Row > 0 && !World[Row-1, Col].Occupied){
+            available.Add('n');
+        }
+
+        if(Col < World.Width-1 && !World[Row, Col+1].Occupied){
+            available.Add('e');
+        }
+
+        if(Row < World.Height-1 && !World[Row+1, Col].Occupied){
+            available.Add('s');
+        }
+
+        if(Col > 0 && !World[Row, Col-1].Occupied){
+            available.Add('w');
+        }
+
+        if(Location.IsPickup && !HasCargo){
+            available.Add('p');
+        }
+
+        if(Location.IsDropoff && HasCargo){
+            available.Add('d');
+        }
+
+        return available;
+    }
 
     // Change occupancy of tiles when agent moves
     private void OnLocationChanged(object sender, PropertyChangedEventArgs<Tile> e){
@@ -93,9 +162,5 @@ public class DAgent
             e.oldValue.Occupied = false;
         }
         e.newValue.Occupied = true;
-    }
-
-    ~DAgent(){
-        LocationChanged -= OnLocationChanged;
     }
 }
