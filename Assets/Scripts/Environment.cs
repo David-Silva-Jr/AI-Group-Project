@@ -56,11 +56,22 @@ public class Environment
         qTable = new QTable(world);
         male = new DAgent(world, "Bob", 0, 0);
         female = new DAgent(world, "Alice", world_height-1, world_width-1);
+        UpdateManhattanDistance();
         turn = 0;
     }
 
     public QTable QTable{
         get{return qTable;}
+    }
+
+    public I_Learning_Formula Formula{
+        get{return formula;}
+        set{formula = value;}
+    }
+
+    public I_Policy Policy{
+        get{return Policy;}
+        set{policy = value;}
     }
 
     public DAgent Male{
@@ -69,6 +80,10 @@ public class Environment
 
     public DAgent Female{
         get{return female;}
+    }
+
+    public Map World{
+        get{return world;}
     }
 
     // These accessors just return if the pickups and dropoffs are still active
@@ -95,10 +110,10 @@ public class Environment
 
     public void DoTurn(){
         if(turn == 0){
-            MakeAgentDoSomething(male);
+            MakeAgentDoSomething(ref male);
         }
         else{
-            MakeAgentDoSomething(female);
+            MakeAgentDoSomething(ref female);
         }
 
         turn++;
@@ -109,18 +124,25 @@ public class Environment
         }
     }
 
-    private void MakeAgentDoSomething(DAgent agent){
+    private void MakeAgentDoSomething(ref DAgent agent){
         // Get possible actions
         List<char> possible_actions = agent.GetAvailableActions();
+        // Debug.Log("Possible moves: ");
+        // foreach(char c in possible_actions){
+        //     Debug.Log(c);
+        // }
 
         // Get current state as string
         string state_as_string = RLFramework.StateToString(agent.Row, agent.Col, manhattan_distance, agent.HasCargo, S, T, U, V);
+        // Debug.Log("State as string: " + state_as_string);
 
         // Chose an action based on policy
         char chosen = policy.GetAction(qTable, state_as_string, possible_actions);
-        
+        // Debug.Log("Chosen action: " + chosen);
+
         // Perform action
         agent.DoAction(chosen);
+        // Debug.Log("Action performed");
 
         // In case the manhattan distance has changed, update it
         // I wanted to make this automatic with events, but it's really important that this happens before the next line runs,
@@ -129,12 +151,15 @@ public class Environment
 
         // get new state as string
         string new_state_as_string = RLFramework.StateToString(agent.Row, agent.Col, manhattan_distance, agent.HasCargo, S, T, U, V);
+        // Debug.Log("New state: " + new_state_as_string);
 
         // Get reward
         float reward = RLFramework.GetReward(state_as_string, new_state_as_string);
+        // Debug.Log("Reward for move: " + reward);
 
         // Update Q-Table based on policy
         formula.UpdateQTable(ref qTable, state_as_string, chosen, reward, new_state_as_string);
+        // Debug.Log("Table updated.");
     }
 
     public void UpdateManhattanDistance(){
@@ -144,6 +169,7 @@ public class Environment
     private void Reset(){
         male.MoveTo(0, 0);
         female.MoveTo(world.Height-1, world.Width-1);
+        UpdateManhattanDistance();
 
         s.Resources = s_initial;
         t.Resources = t_initial;

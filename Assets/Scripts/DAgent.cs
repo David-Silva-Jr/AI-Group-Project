@@ -90,25 +90,25 @@ public class DAgent
     public void MoveTo(int _i, int _j){
         pos_i = _i;
         pos_j = _j;
-        
+
         Location = world[_i, _j];
     }
 
     public void DoAction(char _action){
         if(_action == 'n'){
-            Row -= 1;
+            Row = Row - 1;
         }
 
         if(_action == 'e'){
-            Col += 1;
+            Col = Col + 1;
         }
 
         if(_action == 's'){
-            Row += 1;
+            Row = Row + 1;
         }
 
         if(_action == 'w'){
-            Col -= 1;
+            Col = Col - 1;
         }
 
         if(_action == 'p'){

@@ -11,10 +11,10 @@ public static class RLFramework
         out_str += i + " ";
         out_str += j + " ";
         out_str += dm + " ";
-        out_str += (x ? "1" : "0");
-        out_str += (s ? "1" : "0");
-        out_str += (t ? "1" : "0");
-        out_str += (u ? "1" : "0");
+        out_str += (x ? "1" : "0") + " ";
+        out_str += (s ? "1" : "0") + " ";
+        out_str += (t ? "1" : "0") + " ";
+        out_str += (u ? "1" : "0") + " ";
         out_str += (v ? "1" : "0");
 
         return out_str;
@@ -60,11 +60,11 @@ public static class RLFramework
         Tile location = _map[i, j];
 
         if(location.IsPickup && _action == 'p' && x == 0){
-            return 5;
+            return 10;
         }
 
         if(location.IsDropoff && _action == 'd' && x == 1){
-            return 20;
+            return 50;
         }
 
         if(_action == 'n' || _action == 'e' || _action == 's' || _action == 'w'){

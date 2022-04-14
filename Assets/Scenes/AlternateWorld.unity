@@ -243,7 +243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paused: 0
-  tick_timer_max: 0.5
+  tick_timer_max: 0.1
 --- !u!4 &150884403
 Transform:
   m_ObjectHideFlags: 0
@@ -256,9 +256,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1028858014
+--- !u!1 &217084668
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -266,47 +266,66 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1028858015}
-  - component: {fileID: 1028858016}
+  - component: {fileID: 217084670}
+  - component: {fileID: 217084669}
   m_Layer: 0
-  m_Name: MapGenController
+  m_Name: RL-Learning-Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1028858015
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1028858014}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1028858016
+--- !u!114 &217084669
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1028858014}
+  m_GameObject: {fileID: 217084668}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4dfccf37f7ebd047be46cd0d8f9dfc9, type: 3}
+  m_Script: {fileID: 11500000, guid: b41c66a3c8c4645498a6b3ff0b07644b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSize: 10
-  cellSize: 1
-  cell: {fileID: 233139325993543499, guid: 9f812404bfabc4d48b82072310c6cfcf, type: 3}
-  origin: {x: 0, y: 0, z: 0}
-  fellaPrefab: {fileID: 6968177423622810545, guid: 58a8f1940cbd10146b9bfd9b1217cc76,
-    type: 3}
+  mapSize: 5
+  formula: 0
+  policy: 0
+  learningRate: 0.3
+  discountRate: 0.8
+  policy2: 2
+  s: 5
+  sPos: {x: 2, y: 2}
+  t: 5
+  tPos: {x: 2, y: 4}
+  u: 5
+  uPos: {x: 0, y: 0}
+  v: 5
+  vPos: {x: 4, y: 4}
+  randomSeed: 0
+  numRandomSteps: 500
+  numTrainingSteps: 7500
+  timer: {fileID: 150884402}
+  cube: {fileID: 233139325993543499, guid: 9f812404bfabc4d48b82072310c6cfcf, type: 3}
+  matpickup: {fileID: 2100000, guid: 70ab4bcf2117c1d44bf7f1be73f21a7c, type: 2}
+  matDropoff: {fileID: 2100000, guid: fa9ec08fe809a4f42ade432bee3cc575, type: 2}
+  capsule: {fileID: 537383485302998787, guid: 94dab18ac52f62643957bd8e087928e1, type: 3}
+  matMale: {fileID: 2100000, guid: 9558d1ba579b636448b5abcfb4cc94eb, type: 2}
+  matFemale: {fileID: 2100000, guid: 511fbf2950a7ea04796c749207269d2a, type: 2}
+  matCargo: {fileID: 2100000, guid: 9976afe4003660b43a3e8e90f427b731, type: 2}
+--- !u!4 &217084670
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217084668}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1835323253
 GameObject:
   m_ObjectHideFlags: 0

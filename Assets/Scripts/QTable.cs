@@ -54,14 +54,14 @@ public class QTable{
 
     // Not inclusive on last
     public string DrawRows(int first, int last){
-        if(first < 0 || first >= last || last >= table.Count){
+        if(first < 0 || first >= last || last > table.Count){
             return "Invalid\n";
         }
 
         string out_str = "            n e s w p d\n";
 
         List<string> keyList = States;
-        for(int i = first; first < last; i++){
+        for(int i = first; i < last; i++){
             out_str += keyList[i] + " > ";
             
             foreach( float v in table[keyList[i]].Values){
