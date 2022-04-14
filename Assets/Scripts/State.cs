@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 // May want to move this to RLFrameworks
-// Need some way to check equality between states (two states with the same agent and the same tile should be the same)
+// Really ony used to make reading state data easier
 public class State
 {
     //     State string format: "i j Dm x s t u v"
@@ -27,6 +27,7 @@ public class State
         d2 = false;
     }
 
+    // Essentially just read string and convert to a state object
     public State(string state_as_string){
         List<string> vals = new List<string>(state_as_string.Split(' '));
 
@@ -40,6 +41,7 @@ public class State
         d2 = vals[7] == "1" ? true : false;
     }
 
+    // Accessors
     public int I{
         get{return pos_i;}
     }
@@ -72,16 +74,17 @@ public class State
         get{return d2;}
     }
 
+    // Converts the state object back into a string
     public string As_String(){
         string out_str = "";
 
         out_str += pos_i + " ";
         out_str += pos_j + " ";
         out_str += manhattan_distance + " ";
-        out_str += (hasCargo ? "1" : "0");
-        out_str += (p1 ? "1" : "0");
-        out_str += (p2 ? "1" : "0");
-        out_str += (d1 ? "1" : "0");
+        out_str += (hasCargo ? "1" : "0") + " ";
+        out_str += (p1 ? "1" : "0") + " ";
+        out_str += (p2 ? "1" : "0") + " ";
+        out_str += (d1 ? "1" : "0") + " ";
         out_str += (d2 ? "1" : "0");
 
         return out_str;

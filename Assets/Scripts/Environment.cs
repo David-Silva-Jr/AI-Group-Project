@@ -4,16 +4,16 @@ using System.Collections.Generic;
 
 public class Environment
 {
-    private Map world;
-    private QTable qTable;
-    private DAgent male;
-    private DAgent female;
-    private int turn; // male turn is 0, female turn is 1
+    private Map world;                  // Map object holding tile data
+    private QTable qTable;              // Q-Table
+    private DAgent male;                // Male agent
+    private DAgent female;              // Female agent
+    private int turn;                   // male turn is 0, female turn is 1
 
     private I_Learning_Formula formula; // How is the Q-Table updating?
-    private I_Policy policy; // What RL Policy is active?
+    private I_Policy policy;            // What RL Policy is active?
 
-    int manhattan_distance; // Distance between agents
+    int manhattan_distance;             // Distance between agents
 
     // pickups
     private Tile s;
@@ -108,6 +108,7 @@ public class Environment
         get{return !(S || T || U || V);}
     }
 
+    // Has an agent perform an action and resets if goal condition is reached
     public void DoTurn(){
         if(turn == 0){
             MakeAgentDoSomething(ref male);
@@ -124,6 +125,9 @@ public class Environment
         }
     }
 
+    // Uses loaded policy to pass appropriate action to an agent
+    // Agent then performs that action
+    // Q-Table is updated afterwards
     private void MakeAgentDoSomething(ref DAgent agent){
         // Get possible actions
         List<char> possible_actions = agent.GetAvailableActions();

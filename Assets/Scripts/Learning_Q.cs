@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+// Note that this class inherits from the I_Learning_Formula interface
 public class Learning_Q : I_Learning_Formula
 {
     private float learning_rate;
@@ -12,6 +13,7 @@ public class Learning_Q : I_Learning_Formula
         discount_rate = gamma;
     }
 
+    // Implementing the function required by the interface
     public void UpdateQTable(ref QTable table, string old_state, char op, float reward, string new_state){
         float oldVal = table[old_state, op];
         List<float> newStateQVals = new List<float>(table[new_state].Values);

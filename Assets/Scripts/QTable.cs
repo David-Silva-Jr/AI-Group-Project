@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
+// I should probably go back and make this more general, but it'll do for now
 public class QTable{
     // State format: i j Dm x s t u v
     // table[state] will return the row of the q table corresponding to that state
+    // table[string, char] will return the float q-value of action char from state string    
     Dictionary<string, Dictionary<char, float>> table;
 
 
@@ -52,6 +54,7 @@ public class QTable{
         }
     }
 
+    // Returns string that crudely represents a section of the table
     // Not inclusive on last
     public string DrawRows(int first, int last){
         if(first < 0 || first >= last || last > table.Count){
@@ -73,28 +76,22 @@ public class QTable{
         return out_str;
     }
 
-    // Does this state exist?
-    public bool HasState(string state_as_string){
-        return table.ContainsKey(state_as_string);
-    }
-
     // Return dictionary corresponding to row of Q-Table for a given state
     public Dictionary<char, float> this[string state_as_string]{
         get{return table[state_as_string];}
     }
 
-    // Return number of rows in Q-Table (I think)
+    // Return number of rows in Q-Table
     public int Size{
         get{return table.Count;}
     }
 
+    // Gets list of possible states
     public List<string> States{
         get{return new List<string>(table.Keys);}
     }
 
     // Return Q-Value of a certain action from a certain state
-    // Q-Table values are accessed like this:
-    // QTable[string, char]
     public float this[string state_as_string, char action]{
         get{return table[state_as_string][action];}
         set{table[state_as_string][action] = value;}

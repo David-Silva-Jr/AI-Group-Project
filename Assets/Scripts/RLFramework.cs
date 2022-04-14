@@ -51,26 +51,26 @@ public static class RLFramework
     }
 
     // Returns the reward of a given action given a certain state
-    public static int GetReward(Map _map, string _state_as_string,  char _action){
-        List<string> vals = new List<string>(_state_as_string.Split(' '));
-        int i = int.Parse(vals[0]);
-        int j = int.Parse(vals[1]);
-        int x = int.Parse(vals[3]);
+    // public static int GetReward(Map _map, string _state_as_string,  char _action){
+    //     List<string> vals = new List<string>(_state_as_string.Split(' '));
+    //     int i = int.Parse(vals[0]);
+    //     int j = int.Parse(vals[1]);
+    //     int x = int.Parse(vals[3]);
 
-        Tile location = _map[i, j];
+    //     Tile location = _map[i, j];
 
-        if(location.IsPickup && _action == 'p' && x == 0){
-            return 10;
-        }
+    //     if(location.IsPickup && _action == 'p' && x == 0){
+    //         return 10;
+    //     }
 
-        if(location.IsDropoff && _action == 'd' && x == 1){
-            return 50;
-        }
+    //     if(location.IsDropoff && _action == 'd' && x == 1){
+    //         return 50;
+    //     }
 
-        if(_action == 'n' || _action == 'e' || _action == 's' || _action == 'w'){
-            return -1;
-        }
+    //     if(_action == 'n' || _action == 'e' || _action == 's' || _action == 'w'){
+    //         return -1;
+    //     }
 
-        return 0;
-    }
+    //     return 0;
+    // }
 }

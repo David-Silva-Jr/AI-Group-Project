@@ -83,10 +83,6 @@ public class DAgent
         get {return world;}
     }
 
-    // public List<Tile> AdjacentLocations{
-    //     get {return location.AdjacentTiles;}
-    // }
-
     public void MoveTo(int _i, int _j){
         pos_i = _i;
         pos_j = _j;
@@ -126,6 +122,7 @@ public class DAgent
         }
     }
 
+    // Returns a list of actions available to the agent
     public List<char> GetAvailableActions(){
         List<char> available = new List<char>();
 
@@ -157,6 +154,8 @@ public class DAgent
     }
 
     // Change occupancy of tiles when agent moves
+    //    Possible that this should go somewhere else as it is only tangentially related to the agent,
+    // but it's just so convenient here
     private void OnLocationChanged(object sender, PropertyChangedEventArgs<Tile> e){
         if(e.oldValue != null){
             e.oldValue.Occupied = false;

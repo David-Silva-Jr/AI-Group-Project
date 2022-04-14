@@ -82,6 +82,7 @@ public class RLManager : MonoBehaviour
         // Instantiate environment
         environment = new Environment(mapSize, mapSize, chosen_policy, chosen_formula, s, sPos.x, sPos.y, t, tPos.x, tPos.y, u, uPos.x, uPos.y, v, vPos.x, vPos.y);
 
+        // Create map from cubes
         for(int i = 0; i < mapSize; i++){
             for(int j = 0; j < mapSize; j++){
                 GameObject tileCube = Instantiate(cube, new Vector3(i, 0, j), Quaternion.identity, transform);
@@ -94,6 +95,7 @@ public class RLManager : MonoBehaviour
             }
         }
 
+        // Do exploration and training steps
         for(int i = 0; i < numRandomSteps; i++){
             environment.DoTurn();
         }
@@ -102,9 +104,11 @@ public class RLManager : MonoBehaviour
             environment.DoTurn();
         }
 
+        // Start visualization stuff
         moveTime = timer.GetMaxTickTimer() / 5;
         t_lerp = 0;
 
+        // Create agents
         malePos = new Vector3(environment.Male.Row, 1.5f, environment.Male.Col);
         maleTarget = malePos;
         maleVis = Instantiate(capsule, new Vector3(environment.Male.Row, 1.5f, environment.Male.Col), Quaternion.identity, transform);
@@ -115,6 +119,7 @@ public class RLManager : MonoBehaviour
         femaleVis = Instantiate(capsule, new Vector3(environment.Female.Row, 1.5f, environment.Female.Col), Quaternion.identity, transform);
         femaleVis.GetComponent<MeshRenderer>().sharedMaterial = matFemale;
 
+        // Set up event actions
         ALT_TimeSystem.Tick += OnTick;
         environment.Male.LocationChanged += OnMaleMove;
         environment.Male.HasCargoChanged += OnMaleCargo;
@@ -152,6 +157,10 @@ public class RLManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Moves agents smoothly from start to target positions
+        //    Set position to target if they get close enough because
+        // t gets reset every tick and we don't want one agent to
+        // scoot back every time the other moves
         t_lerp += Time.deltaTime / moveTime;
         maleVis.transform.position = Vector3.Lerp(malePos, maleTarget, t_lerp);
         if((maleVis.transform.position - maleTarget).sqrMagnitude < 0.01f){
@@ -164,11 +173,13 @@ public class RLManager : MonoBehaviour
         }
     }
 
+    // Do a turn every tick
     void OnTick(object sender, ALT_TimeSystem.OnTickEventArgs e){
         environment.DoTurn();
         t_lerp = 0;
     }
 
+    // Set positions on agent move
     void OnMaleMove(object sender, EventArgs e){
         maleTarget = new Vector3(environment.Male.Row, 1.5f, environment.Male.Col);
     }
@@ -177,6 +188,7 @@ public class RLManager : MonoBehaviour
         femaleTarget = new Vector3(environment.Female.Row, 1.5f, environment.Female.Col);
     }
 
+    // Set color on agent pickup/dropoff
     void OnMaleCargo(object sender, DAgent.PropertyChangedEventArgs<bool> e){
         if(e.newValue){
             maleVis.GetComponent<MeshRenderer>().sharedMaterial = matCargo;

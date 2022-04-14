@@ -5,12 +5,13 @@ public class Map
 {
     private int width;
     private int height;
-    private List<List<Tile>> tiles;
+    private List<List<Tile>> tiles;  // Actual map data is all tiles
 
     public Map(int _width, int _height){
         width = _width;
         height = _height;
 
+        // Create map tiles
         tiles = new List<List<Tile>>();
         for(int r = 0; r < _height; r++){
             List<Tile> row = new List<Tile>();
@@ -22,7 +23,7 @@ public class Map
     }
     
     // The way the accessors are now, you can't directly add or remove tiles once the map is generated
-    // I'm pretty sure you can replace nodes though
+    // I'm pretty sure you can replace tiles though
     public int Width{
         get{return width;}
     }
@@ -35,6 +36,7 @@ public class Map
         get{return tiles;}
     }
 
+    // Allows access to specific map tiles by MapObject[r, c]
     public Tile this[int r, int c]{
         get{return tiles[r][c];}
     }

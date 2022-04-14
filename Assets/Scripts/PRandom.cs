@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class PRandom : I_Policy
 {
-    private Random rand;
+    private Random rand; // Note that this is System.Random
 
     public PRandom(int seed){
         rand = new Random(seed);
