@@ -15,9 +15,16 @@ public class PickupZone : MonoBehaviour
         display = GetComponentInChildren<TextMesh>();
     }
 
-    public void setnPickups(int n)
+    public void SetnPickups(int n)
     {
         nPickups = n;
         display.text = nPickups.ToString();
+    }
+
+    public int GetState()
+    {
+        if (nPickups != 0)
+            return 1;
+        else return 0;
     }
 }
