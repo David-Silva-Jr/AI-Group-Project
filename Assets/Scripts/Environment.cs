@@ -161,8 +161,11 @@ public class Environment
         float reward = RLFramework.GetReward(state_as_string, new_state_as_string);
         // Debug.Log("Reward for move: " + reward);
 
+        // Get actions possible from new state
+        List<char> new_possible_actions = agent.GetAvailableActions();
+
         // Update Q-Table based on policy
-        formula.UpdateQTable(ref qTable, state_as_string, chosen, reward, new_state_as_string);
+        formula.UpdateQTable(ref qTable, new_possible_actions, state_as_string, chosen, reward, new_state_as_string);
         // Debug.Log("Table updated.");
     }
 

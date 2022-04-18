@@ -26,6 +26,37 @@ public static class RLFramework
         return new State(state_as_string);
     }
 
+    public static List<char> GetPossibleOperators(Map world, string state_as_string){
+        State data = new State(state_as_string);
+        List<char> ops = new List<char>();
+
+        if(data.I > 0){
+            ops.Add('n');
+        }
+
+        if(data.J < world.Width - 1){
+            ops.Add('e');
+        }
+
+        if(data.I < world.Height - 1){
+            ops.Add('s');
+        }
+
+        if(data.J > 0){
+            ops.Add('w');
+        }
+
+        if(world[data.I, data.J].IsPickup){
+            ops.Add('p');
+        }
+
+        if(world[data.I, data.J].IsDropoff){
+            ops.Add('d');
+        }
+
+        return ops;
+    }
+
     // Returns the reward of a given action
     // bases reward on the difference between old and new states
     public static int GetReward(string oldState, string newState){
@@ -49,28 +80,4 @@ public static class RLFramework
 
         return 0;
     }
-
-    // Returns the reward of a given action given a certain state
-    // public static int GetReward(Map _map, string _state_as_string,  char _action){
-    //     List<string> vals = new List<string>(_state_as_string.Split(' '));
-    //     int i = int.Parse(vals[0]);
-    //     int j = int.Parse(vals[1]);
-    //     int x = int.Parse(vals[3]);
-
-    //     Tile location = _map[i, j];
-
-    //     if(location.IsPickup && _action == 'p' && x == 0){
-    //         return 10;
-    //     }
-
-    //     if(location.IsDropoff && _action == 'd' && x == 1){
-    //         return 50;
-    //     }
-
-    //     if(_action == 'n' || _action == 'e' || _action == 's' || _action == 'w'){
-    //         return -1;
-    //     }
-
-    //     return 0;
-    // }
 }

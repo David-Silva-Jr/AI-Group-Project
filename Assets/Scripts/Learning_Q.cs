@@ -14,9 +14,9 @@ public class Learning_Q : I_Learning_Formula
     }
 
     // Implementing the function required by the interface
-    public void UpdateQTable(ref QTable table, string old_state, char op, float reward, string new_state){
+    public void UpdateQTable(ref QTable table, List<char> possibleOps, string old_state, char op, float reward, string new_state){
         float oldVal = table[old_state, op];
-        List<float> newStateQVals = new List<float>(table[new_state].Values);
+        List<float> newStateQVals = new List<float>(table[new_state].Where(e => possibleOps.Contains(e.Key)).Select(e => e.Value));
 
         table[old_state, op] = (1-learning_rate) * oldVal + learning_rate * (reward + discount_rate*newStateQVals.Max());
     }

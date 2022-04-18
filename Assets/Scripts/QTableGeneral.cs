@@ -1,8 +1,37 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-// I should probably go back and make this more general, but it'll do for now
-public class QTable{
+// This is planned to be a more general construction of a Q-Table
+// It is still a work in progress
+//    Idea: You feed in the state space somehow, and the Q-Table generates rows
+// for all possible permutations of those states
+
+public struct QStateVariable{
+    char varName;
+    int lowerBound;
+    int upperBound;
+
+    public QStateVariable(char opName, int lBound, int uBound){
+        varName = opName;
+        lowerBound = lBound;
+        upperBound = uBound;
+    }
+}
+
+public class StateSpace{
+    List<QStateVariable> dimensions;
+
+    public StateSpace(){
+        dimensions = new List<QStateVariable>();
+    }
+
+    public void AddDimension(){
+        
+    }
+}
+
+// Working on making this more general
+public class QTableGeneral{
     // State format: i j Dm x s t u v
     // table[state] will return the row of the q table corresponding to that state
     // table[string, char] will return the float q-value of action char from state string    
@@ -10,7 +39,7 @@ public class QTable{
 
 
     // This constructor will generate a Q-Table for a given map, initializing all Q-Values to 0
-    public QTable(Map _map){
+    public QTableGeneral(Map _map){
         table = new Dictionary<string, Dictionary<char, float>>();
 
         // Add all possible states to the table upon initialization
@@ -84,10 +113,6 @@ public class QTable{
     // Return number of rows in Q-Table
     public int Size{
         get{return table.Count;}
-    }
-
-    public Dictionary<string, Dictionary<char, float>> Dict{
-        get{return table;}
     }
 
     // Gets list of possible states

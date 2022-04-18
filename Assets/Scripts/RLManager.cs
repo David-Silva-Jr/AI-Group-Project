@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -57,6 +58,8 @@ public class RLManager : MonoBehaviour
 
     public Material matCargo;
 
+    public GameObject arrow;
+
     private Environment environment;
 
     private float t_lerp;
@@ -70,6 +73,8 @@ public class RLManager : MonoBehaviour
     private Vector3 femalePos;
     private Vector3 femaleTarget;
 
+    private List<List<GameObject>> tileCubes;
+    private List<List<Transform>> arrows;
 
     void Awake()
     {
@@ -83,7 +88,9 @@ public class RLManager : MonoBehaviour
         environment = new Environment(mapSize, mapSize, chosen_policy, chosen_formula, s, sPos.x, sPos.y, t, tPos.x, tPos.y, u, uPos.x, uPos.y, v, vPos.x, vPos.y);
 
         // Create map from cubes
+        tileCubes = new List<List<GameObject>>();
         for(int i = 0; i < mapSize; i++){
+            List<GameObject> cubeRow = new  List<GameObject>();
             for(int j = 0; j < mapSize; j++){
                 GameObject tileCube = Instantiate(cube, new Vector3(i, 0, j), Quaternion.identity, transform);
                 if(environment.World[i, j].IsPickup){
@@ -92,7 +99,24 @@ public class RLManager : MonoBehaviour
                 else if(environment.World[i, j].IsDropoff){
                     tileCube.GetComponent<MeshRenderer>().sharedMaterial = matDropoff;
                 }
+                cubeRow.Add(tileCube);
             }
+            tileCubes.Add(cubeRow);
+        }
+
+        // Draw arrows for direction of most value
+        arrows = new List<List<Transform>>();
+        for (int r = 0; r < tileCubes.Count; r++){
+            List<Transform> arrow_row = new List<Transform>();
+            for(int  c = 0; c < tileCubes[r].Count; c++){
+                GameObject direction = Instantiate(arrow, tileCubes[r][c].transform.position + Vector3.up*.501f, Quaternion.AngleAxis(90, Vector3.right), tileCubes[r][c].transform);
+                direction.name = "Arrow";
+                if(environment.World[r, c].IsPickup || environment.World[r, c].IsDropoff){
+                    direction.SetActive(false);
+                }
+                arrow_row.Add(direction.transform);
+            }
+            arrows.Add(arrow_row);
         }
 
         // Do exploration and training steps
@@ -144,12 +168,15 @@ public class RLManager : MonoBehaviour
 
     I_Policy PolicyFromSelectiom(Policies selection){
         if(selection == Policies.PRANDOM){
+            Debug.Log("Selected PRandom");
             return new PRandom(randomSeed);
         }
         else if(selection == Policies.PEXPLOIT){
+            Debug.Log("Selected PExploit");
             return new PExploit(randomSeed);
         }
         else{
+            Debug.Log("Selected default (PRandom)");
             return new PRandom(randomSeed);
         }
     }
@@ -173,10 +200,46 @@ public class RLManager : MonoBehaviour
         }
     }
 
+    // Can probably be sped up
+    void UpdateArrowDirections(){
+        for(int r = 0; r < environment.World.Height; r++){
+            for(int c = 0; c < environment.World.Width; c++){
+                Transform arrw = arrows[r][c];
+
+                // Implement some way to find the highest value direction of a specific tile over all states on that tile
+                List<string> relevantStates = new List<string>(environment.QTable.States.Where(e => e.IndexOf(r.ToString() + " " + c.ToString() + " ") == 0 ).Where(e => e.Split(' ')[3] == "1")); //&& e.Split(' ')[3] == "1"));
+
+                float nSum = 0;
+                float eSum = 0;
+                float sSum = 0;
+                float wSum = 0;
+                foreach(string k in relevantStates){
+                    Dictionary<char, float> pairs = environment.QTable[k];
+                    // List<float> data = new List<float>(environment.QTable[k].Values);
+                    nSum += pairs['n'];
+                    eSum += pairs['e'];
+                    sSum += pairs['s'];
+                    wSum += pairs['w'];
+                }
+
+                List<float> sums = new List<float>();
+                sums.Add(nSum);
+                sums.Add(eSum);
+                sums.Add(sSum);
+                sums.Add(wSum);
+
+                int rotVal = 1 + sums.IndexOf(sums.Where(e => e != 0).Max());
+                // int rotVal = 0;
+                arrw.rotation = Quaternion.AngleAxis(90*rotVal, Vector3.up)*Quaternion.AngleAxis(90, Vector3.right);
+            }
+        }
+    }
+
     // Do a turn every tick
     void OnTick(object sender, ALT_TimeSystem.OnTickEventArgs e){
         environment.DoTurn();
         t_lerp = 0;
+        UpdateArrowDirections();
     }
 
     // Set positions on agent move
