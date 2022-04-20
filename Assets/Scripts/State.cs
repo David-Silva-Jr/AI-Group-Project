@@ -89,4 +89,19 @@ public class State
 
         return out_str;
     }
+
+    public List<int> As_List(){
+        List<int> outList = new List<int>();
+
+        outList.Add(I);
+        outList.Add(J);
+        outList.Add(manhattan_distance);
+        outList.Add(HasCargo ? 1 : 0);
+        outList.Add(S ? 1 : 0);
+        outList.Add(T ? 1 : 0);
+        outList.Add(U ? 1 : 0);
+        outList.Add(V ? 1 : 0);
+
+        return outList;
+    }
 }
