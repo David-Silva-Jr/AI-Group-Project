@@ -7,7 +7,7 @@ using UnityEngine.UI;
 //[On WorldManager]
 //The grid manager manages everything on the grid as well as some UI elements to aid in managing grid objects
 //Creating and deleting grid objects (agents, pickup/dropoff locations)
-//Holds references to grid objects 
+//Holds references to grid objects and can pass it to policy manager
 public class GridManager : MonoBehaviour
 {
     Grid grid;
@@ -19,13 +19,13 @@ public class GridManager : MonoBehaviour
 
     private bool paused = true;
 
-    private  GameObject[] pickupZones = new GameObject[2]; //2 pickup zones
-    private GameObject[] dropoffZones = new GameObject[6]; //6 dropoff zones
+    private  PickupZone[] pickupZones = new PickupZone[2]; //2 pickup zones
+    private DropoffZone[] dropoffZones = new DropoffZone[6]; //4 dropoff zones
     private int currZone; //Index of current zone
     private Cell currentCell;
     private string placing = null;
-    private GameObject maleAgent;
-    private GameObject femaleAgent;
+    private Agent maleAgent;
+    private Agent femaleAgent;
 
     private void Start()
     {
@@ -88,7 +88,7 @@ public class GridManager : MonoBehaviour
                         }                     
                         break;
                     case "Dropoff":
-                        for (int i = 0; i < 2; i++)
+                        for (int i = 0; i < 4; i++)
                         {
                             if (dropoffZones[i] == null) //If we can place a dropoffZone
                             {
@@ -117,7 +117,7 @@ public class GridManager : MonoBehaviour
     public void PickupPopup()
     {
         int nPickups = Int32.Parse(pickupInputField.GetComponent<Text>().text);
-        pickupZones[currZone].GetComponent<PickupZone>().setnPickups(nPickups);
+        pickupZones[currZone].GetComponent<PickupZone>().SetnPickups(nPickups);
         pickupPopup.SetActive(false);
         Pause();
     }
@@ -126,7 +126,7 @@ public class GridManager : MonoBehaviour
     public void DropoffPopup()
     {
         int nDropoffs = Int32.Parse(dropoffInputField.GetComponent<Text>().text);
-        dropoffZones[currZone].GetComponent<DropoffZone>().setnDropoffs(nDropoffs);
+        dropoffZones[currZone].GetComponent<DropoffZone>().SetnDropoffs(nDropoffs);
         dropoffPopup.SetActive(false);
         Pause();
     }
@@ -140,6 +140,21 @@ public class GridManager : MonoBehaviour
             return hitInfo.transform.GetComponent<Cell>();
         }
         else return null;
+    }
+
+    //For the policy manager to get reference to agents
+    public Agent GetAgent(string gender)
+    {
+        if (gender == "female")
+            return femaleAgent;
+        else return maleAgent;
+    }
+
+    //For the policy manger to get zone states
+    public int[] GetZoneState()
+    {
+        int[] state = new int[] { pickupZones[0].GetState(), pickupZones[1].GetState(), dropoffZones[0].GetState(), dropoffZones[1].GetState(), dropoffZones[2].GetState(), dropoffZones[3].GetState() };
+        return state;
     }
 
     //Get the object to place from GUIs

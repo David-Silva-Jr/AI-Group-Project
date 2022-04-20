@@ -38,6 +38,16 @@ public class Cell : MonoBehaviour
         else return null;
     }
 
+    public string GetZone()
+    {
+        if (cellFeatures[1] == null) //Return null
+            return null;
+        else if (cellFeatures[1].name == "Pickup Zone(Clone)") //Return pickup
+            return "pickup";
+        else return "dropoff"; //Return dropoff
+
+    }
+
     private void OnMouseOver()
     {
         HighlightCell();//Highlight cell red when mouse over
@@ -77,7 +87,7 @@ public class Cell : MonoBehaviour
         Destroy(cellFeatures[1]);
     }
 
-    public GameObject PlaceAgent(string gender)
+    public Agent PlaceAgent(string gender)
     {
         if (cellFeatures[0] != null && cellFeatures[0].transform.childCount == 4) //Place agent if there is ground and there isn't already an agent on that space
         {
@@ -89,7 +99,7 @@ public class Cell : MonoBehaviour
                 agent = Instantiate(femaleAgentPrefab, cellFeatures[0].transform.position, Quaternion.identity * Quaternion.AngleAxis(90, Vector3.right));
             agent.transform.SetParent(cellFeatures[0].transform);
             agent.GetComponent<Agent>().SetPosition(posX, posY);
-            return agent;
+            return agent.GetComponent<Agent>();
         }
         return null;
     }
@@ -98,22 +108,22 @@ public class Cell : MonoBehaviour
     {
         Destroy(cellFeatures[0].transform.GetChild(4).gameObject);
     }
-    public GameObject placePickupZone()
+    public PickupZone placePickupZone()
     {
         if (cellFeatures[0] != null && cellFeatures[1] == null) //Place zone if there's ground and no zone
         {
             cellFeatures[1] = Instantiate(pickupZonePrefab, transform.GetChild(0).GetComponent<Renderer>().bounds.center + Vector3.down * 3 + Vector3.back/10, Quaternion.identity);
-            return cellFeatures[1];
+            return cellFeatures[1].GetComponent<PickupZone>();
         }
         return null;
     }
 
-    public GameObject placeDropoffZone()
+    public DropoffZone placeDropoffZone()
     {
         if (cellFeatures[0] != null && cellFeatures[1] == null) //Place zone if there's ground and no zone
         {
             cellFeatures[1] = Instantiate(dropoffZonePrefab, transform.GetChild(0).GetComponent<Renderer>().bounds.center + Vector3.down * 3 + Vector3.back/10, Quaternion.identity);
-            return cellFeatures[1];
+            return cellFeatures[1].GetComponent<DropoffZone>(); ;
         }
         return null;
     }

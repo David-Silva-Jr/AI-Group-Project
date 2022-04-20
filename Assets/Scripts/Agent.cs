@@ -11,7 +11,7 @@ public class Agent : MonoBehaviour
     private Vector3 startPosition; //3D position for moving in world
     private int posX;   //2D position as grid data
     private int posY;
-    int carrying = 1; //Actually bool
+    int carrying = 0; //Actually bool
     private List<GameObject> moves = new List<GameObject>(); //List of 4 possible moves
     private List<string> operators = new List<string>(); //List of moveable directions
     int dirIndex; //Index of selected direction
@@ -39,8 +39,6 @@ public class Agent : MonoBehaviour
         timeToReachTarget = timeSystem.GetMaxTickTimer()/5;
 
         startPosition = transform.position;
-        //Subscribe to OnTick event
-        TimeSystem.OnTick += OnTickHandler;
     }
 
     // Update is called once per frame
@@ -85,7 +83,9 @@ public class Agent : MonoBehaviour
 
     public List<string> GetOperator()
     {
+        //Clear lists
         moves.Clear();
+        operators.Clear();
         //Add all directions to direction list
         moves.Add(GameObject.Find("(X: " + (posX).ToString() + "Y: " + (posY + 1).ToString() + ")")); //Add north
         moves.Add(GameObject.Find("(X: " + (posX + 1).ToString() + "Y: " + (posY).ToString() + ")")); //Add east
@@ -93,8 +93,19 @@ public class Agent : MonoBehaviour
         moves.Add(GameObject.Find("(X: " + (posX - 1).ToString() + "Y: " + (posY).ToString() + ")")); //Add west
 
         for(int i = 0;i < 4; i++)
-            if (moves[i] != null && moves[i].GetComponent<Cell>().GetGround() != null)
-                operators.Add( ((direction) i).ToString());
+        {
+            Transform ground = moves[i].GetComponent<Cell>().GetGround();
+            //If there is ground not occupied by another agent
+            if (moves[i] != null && ground != null && ground.childCount == 4)
+                operators.Add(((direction)i).ToString()); //Add a move to that ground to operator list
+        }
+
+        
+
+        //Add pickup and dropoff operators if available
+        if (GameObject.Find("(X: " + (posX).ToString() + "Y: " + (posY).ToString() + ")").GetComponent<Cell>().GetZone() != null)
+            operators.Add(GameObject.Find("(X: " + (posX).ToString() + "Y: " + (posY).ToString() + ")").GetComponent<Cell>().GetZone());
+
         return operators;
     }
 
@@ -102,17 +113,5 @@ public class Agent : MonoBehaviour
     {
         int[] state = new int[] {posX, posY, carrying};
         return state;
-    }
-
-    //Handles OnTick event
-    private void OnTickHandler(object sender, TimeSystem.OnTickEventArgs e)
-    {
-        //RandomMovement();
-    }
-
-    private void OnDestroy()
-    {
-        //Unsubscribe when destroyed
-        TimeSystem.OnTick -= OnTickHandler;
     }
 }
