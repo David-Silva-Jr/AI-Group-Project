@@ -20,6 +20,9 @@ public static class RLFramework
         return out_str;
     }
 
+    public static List<int> StringStateToList(string state_as_string){
+        return new State(state_as_string).As_List();
+    }
 
     // Returns the state as a type so data can be more easily read
     public static State StringToState(string state_as_string){
