@@ -212,6 +212,7 @@ GameObject:
   - component: {fileID: 421518852}
   - component: {fileID: 421518853}
   - component: {fileID: 421518854}
+  - component: {fileID: 421518855}
   m_Layer: 0
   m_Name: WorldManager
   m_TagString: Untagged
@@ -249,9 +250,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   pickupPopup: {fileID: 1686793138}
-  dropoffPopup: {fileID: 0}
+  dropoffPopup: {fileID: 1311235229}
   pickupInputField: {fileID: 1222896891}
-  dropoffInputField: {fileID: 0}
+  dropoffInputField: {fileID: 1822946351}
 --- !u!114 &421518854
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -266,6 +267,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timer: {fileID: 1203825401}
   tick_timer_max: 1
+--- !u!114 &421518855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421518851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fab6c27c90a91045ad6a8ba8b44da8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &426698593
 GameObject:
   m_ObjectHideFlags: 0
@@ -1775,7 +1788,7 @@ GameObject:
   - component: {fileID: 1222896894}
   - component: {fileID: 1222896893}
   m_Layer: 5
-  m_Name: Text
+  m_Name: PickupInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1935,7 +1948,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 421518853}
-        m_MethodName: PickupPopup
+        m_MethodName: DropoffPopup
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3674,7 +3687,7 @@ GameObject:
   - component: {fileID: 1822946354}
   - component: {fileID: 1822946353}
   m_Layer: 5
-  m_Name: Text
+  m_Name: DropoffInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
