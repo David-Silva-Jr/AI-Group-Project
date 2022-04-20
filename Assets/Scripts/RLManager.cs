@@ -78,7 +78,7 @@ public class RLManager : MonoBehaviour
     private List<List<Transform>> arrows;
 
     // Statistics
-    
+
 
     void Awake()
     {
@@ -130,6 +130,8 @@ public class RLManager : MonoBehaviour
         }
 
         Debug.Log(terminalStatesReached +  " terminal states reached.");
+
+        // Debug.Log(environment.QTable.DrawRows(0, 10));
 
         // Start visualization stuff
         moveTime = timer.GetMaxTickTimer() / 5;
@@ -216,6 +218,7 @@ public class RLManager : MonoBehaviour
     }
 
     void CreateArrows(){
+        Debug.Log("Creating arrows");
         for (int r = 0; r < tileCubes.Count; r++){
             List<Transform> arrow_row = new List<Transform>();
             for(int  c = 0; c < tileCubes[r].Count; c++){
@@ -237,7 +240,9 @@ public class RLManager : MonoBehaviour
                 Transform arrw = arrows[r][c];
 
                 // Implement some way to find the highest value direction of a specific tile over all states on that tile
-                List<string> relevantStates = new List<string>(environment.QTable.States.Where(e => e.IndexOf(r.ToString() + " " + c.ToString() + " ") == 0 ).Where(e => e.Split(' ')[3] == "1")); //&& e.Split(' ')[3] == "1"));
+                List<string> relevantStates = new List<string>(environment.QTable.States.Where(e => e.IndexOf(r.ToString() + " " + c.ToString() + " ") == 0 )); //&& e.Split(' ')[3] == "1"));
+
+                // Debug.Log(relevantStates.Count + " relevant states detected.");
 
                 float nSum = 0;
                 float eSum = 0;
@@ -245,21 +250,28 @@ public class RLManager : MonoBehaviour
                 float wSum = 0;
                 foreach(string k in relevantStates){
                     Dictionary<char, float> pairs = environment.QTable[k];
-                    // List<float> data = new List<float>(environment.QTable[k].Values);
                     nSum += pairs['n'];
                     eSum += pairs['e'];
                     sSum += pairs['s'];
                     wSum += pairs['w'];
                 }
-
+                
                 List<float> sums = new List<float>();
+                List<KeyValuePair<char, float>> sumsPairs = new List<KeyValuePair<char, float>>();
+                sumsPairs.Add(new KeyValuePair<char, float>('n', nSum));
+                sumsPairs.Add(new KeyValuePair<char, float>('e', eSum));
+                sumsPairs.Add(new KeyValuePair<char, float>('s', sSum));
+                sumsPairs.Add(new KeyValuePair<char, float>('w', wSum));
+
                 sums.Add(nSum);
                 sums.Add(eSum);
                 sums.Add(sSum);
                 sums.Add(wSum);
 
-                int rotVal = 1 + sums.IndexOf(sums.Where(e => e != 0).Max());
-                // int rotVal = 0;
+                List<char> possibleMoves = RLFramework.GetPossibleMovementOperators(environment.World, r, c);
+
+                int rotVal = 1 + sums.IndexOf(sumsPairs.Where(e => possibleMoves.Contains(e.Key)).Select(e => e.Value).Max());
+
                 arrw.rotation = Quaternion.AngleAxis(90*rotVal, Vector3.up)*Quaternion.AngleAxis(90, Vector3.right);
             }
         }

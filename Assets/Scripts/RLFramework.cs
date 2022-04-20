@@ -57,6 +57,28 @@ public static class RLFramework
         return ops;
     }
 
+    public static List<char> GetPossibleMovementOperators(Map world, int r, int c){
+        List<char> ops = new List<char>();
+
+        if(r > 0){
+            ops.Add('n');
+        }
+
+        if(c < world.Width - 1){
+            ops.Add('e');
+        }
+
+        if(r < world.Height - 1){
+            ops.Add('s');
+        }
+
+        if(c > 0){
+            ops.Add('w');
+        }
+
+        return ops;
+    }
+
     // Returns the reward of a given action
     // bases reward on the difference between old and new states
     public static int GetReward(string oldState, string newState){
