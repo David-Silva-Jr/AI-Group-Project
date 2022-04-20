@@ -292,7 +292,7 @@ MonoBehaviour:
   policy: 0
   learningRate: 0.3
   discountRate: 0.8
-  policy2: 1
+  policy2: 2
   s: 5
   sPos: {x: 2, y: 2}
   t: 5
@@ -301,7 +301,7 @@ MonoBehaviour:
   uPos: {x: 0, y: 0}
   v: 5
   vPos: {x: 4, y: 4}
-  randomSeed: 0
+  randomSeed: 628
   numRandomSteps: 500
   numTrainingSteps: 7500
   timer: {fileID: 150884402}

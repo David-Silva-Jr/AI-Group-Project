@@ -70,7 +70,7 @@ public class Environment
 
         turn = 0;
         turnsResetCalled = new List<int>();
-        turnsMaleBumped = new List<int>();
+        turnsMaleBumped = new List<int>(); // Need to change this to work as most valuable move only is considered
         turnsFemaleBumped = new List<int>();
         distancePerTurn = new List<int>();
 
@@ -199,8 +199,7 @@ public class Environment
         u.Resources = u_initial;
         v.Resources = v_initial;
 
-        turn = 0;
-
+        turnsResetCalled.Add(turn);
         ResetCalled?.Invoke(this, EventArgs.Empty);
     }
 }
