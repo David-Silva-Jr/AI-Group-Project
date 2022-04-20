@@ -25,6 +25,7 @@ public class DAgent
     // Create events for property changes
     public event EventHandler<PropertyChangedEventArgs<Tile>> LocationChanged;
     public event EventHandler<PropertyChangedEventArgs<bool>> HasCargoChanged;
+    public event EventHandler Bumped; // Fires when direction agent is trying to move in is occupied
 
     // Constructor
     public DAgent(Map _world, string _name, int _i, int _j){
@@ -126,20 +127,40 @@ public class DAgent
     public List<char> GetAvailableActions(){
         List<char> available = new List<char>();
 
-        if(Row > 0 && !World[Row-1, Col].Occupied){
-            available.Add('n');
+        if(Row > 0){
+            if(World[Row-1, Col].Occupied){
+                Bumped?.Invoke(this, EventArgs.Empty);
+            }
+            else{
+                available.Add('n');
+            }
         }
 
-        if(Col < World.Width-1 && !World[Row, Col+1].Occupied){
-            available.Add('e');
+        if(Col < World.Width-1){
+            if(World[Row, Col+1].Occupied){
+                Bumped?.Invoke(this, EventArgs.Empty);
+            }
+            else{
+                available.Add('e');
+            }
         }
 
-        if(Row < World.Height-1 && !World[Row+1, Col].Occupied){
-            available.Add('s');
+        if(Row < World.Height-1){
+            if(World[Row+1, Col].Occupied){
+                Bumped?.Invoke(this, EventArgs.Empty);
+            }
+            else{
+                available.Add('s');
+            }
         }
 
-        if(Col > 0 && !World[Row, Col-1].Occupied){
-            available.Add('w');
+        if(Col > 0){
+            if(World[Row, Col-1].Occupied){
+                Bumped?.Invoke(this, EventArgs.Empty);
+            }
+            else{
+                available.Add('w');
+            }
         }
 
         if(Location.IsPickup && !HasCargo){

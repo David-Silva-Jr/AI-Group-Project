@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -29,6 +30,15 @@ public class Environment
     private int u_initial;
     private int v_initial;
 
+    // This event fires when Reset is called
+    public event EventHandler ResetCalled;
+
+    // Statistics
+    private List<int> turnsResetCalled;
+    private List<int> turnsMaleBumped;
+    private List<int> turnsFemaleBumped;
+    private List<int> distancePerTurn;
+
     public Environment(int world_width, int world_height, I_Policy rl_policy, I_Learning_Formula rl_formula, int s_capacity, int si, int sj, int t_capacity, int ti, int tj, int u_capacity, int ui, int uj, int v_capacity, int vi, int vj){
         world = new Map(world_width, world_height);
 
@@ -57,7 +67,14 @@ public class Environment
         male = new DAgent(world, "Bob", 0, 0);
         female = new DAgent(world, "Alice", world_height-1, world_width-1);
         UpdateManhattanDistance();
+
         turn = 0;
+        turnsResetCalled = new List<int>();
+        turnsMaleBumped = new List<int>();
+        turnsFemaleBumped = new List<int>();
+        distancePerTurn = new List<int>();
+
+        distancePerTurn.Add(manhattan_distance);
     }
 
     public QTable QTable{
@@ -110,7 +127,7 @@ public class Environment
 
     // Has an agent perform an action and resets if goal condition is reached
     public void DoTurn(){
-        if(turn == 0){
+        if(turn%2 == 0){
             MakeAgentDoSomething(ref male);
         }
         else{
@@ -118,7 +135,6 @@ public class Environment
         }
 
         turn++;
-        turn = turn%2;
 
         if(FinalConditionReached){
             Reset();
@@ -184,5 +200,7 @@ public class Environment
         v.Resources = v_initial;
 
         turn = 0;
+
+        ResetCalled?.Invoke(this, EventArgs.Empty);
     }
 }

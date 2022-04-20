@@ -243,7 +243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paused: 0
-  tick_timer_max: 0.1
+  tick_timer_max: 0.2
 --- !u!4 &150884403
 Transform:
   m_ObjectHideFlags: 0
@@ -288,11 +288,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapSize: 5
-  formula: 1
+  formula: 0
   policy: 0
   learningRate: 0.3
   discountRate: 0.8
-  policy2: 2
+  policy2: 1
   s: 5
   sPos: {x: 2, y: 2}
   t: 5
@@ -312,6 +312,7 @@ MonoBehaviour:
   matMale: {fileID: 2100000, guid: 9558d1ba579b636448b5abcfb4cc94eb, type: 2}
   matFemale: {fileID: 2100000, guid: 511fbf2950a7ea04796c749207269d2a, type: 2}
   matCargo: {fileID: 2100000, guid: 9976afe4003660b43a3e8e90f427b731, type: 2}
+  drawArrows: 0
   arrow: {fileID: 8943474470447171190, guid: 3c5a99e83ec94304b8b443a96973a8b2, type: 3}
 --- !u!4 &217084670
 Transform:
