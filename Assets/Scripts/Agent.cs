@@ -19,10 +19,10 @@ public class Agent : MonoBehaviour
 
     private enum direction
     {
-        north,
-        east,
-        south,
-        west
+        n,
+        e,
+        s,
+        w
     }
 
     public void SetPosition(int x, int y)

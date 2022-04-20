@@ -43,8 +43,8 @@ public class Cell : MonoBehaviour
         if (cellFeatures[1] == null) //Return null
             return null;
         else if (cellFeatures[1].name == "Pickup Zone(Clone)") //Return pickup
-            return "pickup";
-        else return "dropoff"; //Return dropoff
+            return "p";
+        else return "d"; //Return dropoff
 
     }
 

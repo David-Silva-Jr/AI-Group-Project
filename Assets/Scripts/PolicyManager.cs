@@ -38,15 +38,9 @@ public class PolicyManager : MonoBehaviour
     private void OnTickHandler(object sender, TimeSystem.OnTickEventArgs e)
     {
         //Run female agent first in odd ticks starting with 1
-        if(e.tick%2 == 1)
-        {
-            SetOperatorAndState("female", "male");
-        }
+        SetOperatorAndState("female", "male");
         //Run male agent after in even ticks
-        else
-        {
-            SetOperatorAndState("male", "female");
-        }
+        SetOperatorAndState("male", "female");
     }
 
     //Set the variables operators and state for agent of gender A
@@ -60,13 +54,17 @@ public class PolicyManager : MonoBehaviour
         agentB = gridManager.GetAgent(genderB);
         BState = agentB.GetAgentState();
 
-        //Assign pos x, posy, carrying
-        for (int i = 0; i < 3; i++)
+        //Assign pos x, posy
+        for (int i = 0; i < 2; i++)
         {
             state[i] = AState[i];
         }
+
         //Assign distance
-        state[3] = Math.Abs(AState[0] - BState[0]) + Math.Abs(AState[1] - BState[1]);
+        state[2] = Math.Abs(AState[0] - BState[0]) + Math.Abs(AState[1] - BState[1]);
+
+        //Assign carrying
+        state[3] = AState[3];
 
 
         //Get operators and zone states. These may be affected after male moves
