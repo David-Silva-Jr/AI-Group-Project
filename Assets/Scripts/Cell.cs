@@ -38,14 +38,29 @@ public class Cell : MonoBehaviour
         else return null;
     }
 
-    public string GetZone()
+    public string GetZoneOperator()
     {
         if (cellFeatures[1] == null) //Return null
             return null;
-        else if (cellFeatures[1].name == "Pickup Zone(Clone)") //Return pickup
-            return "p";
-        else return "d"; //Return dropoff
+        else if (cellFeatures[1].name == "Pickup Zone(Clone)") //Return pickup if available
+        {
+            if (cellFeatures[1].GetComponent<PickupZone>().GetState() == 1)
+                return "p";
+        }
 
+        else if (cellFeatures[1].GetComponent<DropoffZone>().GetState() == 1)
+            return "d";
+
+        return null;
+
+    }
+
+    public void ZoneAction(string action)
+    {
+        if (action == "p")
+            cellFeatures[1].GetComponent<PickupZone>().PickUp();
+        else 
+            cellFeatures[1].GetComponent<DropoffZone>().Dropoff();
     }
 
     private void OnMouseOver()

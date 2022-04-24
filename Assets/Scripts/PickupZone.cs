@@ -27,4 +27,11 @@ public class PickupZone : MonoBehaviour
             return 1;
         else return 0;
     }
+
+    public void PickUp()
+    {
+        nPickups--;
+        display.text = nPickups.ToString();
+    }
+
 }

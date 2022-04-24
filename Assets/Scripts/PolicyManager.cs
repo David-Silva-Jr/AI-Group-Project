@@ -1,12 +1,51 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System;
+using System.Linq;
 
 //[On WorldManager]
 //Policy manager receives agents' states and operators as inputs and do all necessary computations
 public class PolicyManager : MonoBehaviour
 {
+
+    [SerializeField] private GameObject dropdown;
+    [SerializeField] private GameObject stepInputField;
+
+    private Dictionary<string, double> Qtable = new Dictionary<string, double>();
+
+    int endstep = 500;
+    public enum Formulas
+    {
+        QLEARNING,
+        SARSA
+    }
+
+    public enum Policies
+    {
+        PRANDOM,
+        PGREEDY,
+        PEXPLOIT
+    }
+
+    //Displayed stats
+    [SerializeField] private Text randomSteps;
+    private int randomStep = 0;
+    [SerializeField] private Text greedySteps;
+    private int greedyStep = 0;
+    [SerializeField] private Text exploitSteps;
+    private int exploitStep = 0;
+
+    [SerializeField] private Text terminations;
+    private int termination = 0;
+
+    //Policy values
+    public Formulas formula;
+    public Policies policy;
+    public float learningRate;
+    public float discountRate;
+
     //States of agent only
     Agent agentA;
     int[] AState;
@@ -14,11 +53,23 @@ public class PolicyManager : MonoBehaviour
     Agent agentB;
     int[] BState;
 
-    List<string> operators; //Available operators
+    List<string> femaleOperators; //Available operators
+    List<string> maleOperators; //Available operators
+
+    List<string> newFemaleOperators; //Available operators
+    List<string> newMaleOperators; //Available operators
+
     int[] zoneState;//State of zones only
-    int[] state = new int[8]; //Full state (posx,posy,carrying,distance,pickup/dropoff,pickup/dropoff,irrelevant/dropoff,irrelevant/dropoff)
+
+    int[] femaleState = new int[8]; //Full state (posx,posy,carrying,distance,pickup/dropoff,pickup/dropoff,irrelevant/dropoff,irrelevant/dropoff)
+    int[] newFemaleState = new int[8];
+
+    int[] maleState = new int[8]; //Full state (posx,posy,carrying,distance,pickup/dropoff,pickup/dropoff,irrelevant/dropoff,irrelevant/dropoff)
+    int[] newMaleState = new int[8];
 
     GridManager gridManager;
+    TimeSystem timeSystem;
+    int stepToPause = -1;
 
 
     // Start is called before the first frame update
@@ -27,25 +78,67 @@ public class PolicyManager : MonoBehaviour
         //Get grid manager
         gridManager = GetComponent<GridManager>();
 
-        TimeSystem timeSystem = FindObjectOfType<TimeSystem>();
+        timeSystem = GetComponent<TimeSystem>();
         //Subscribe to OnTick event
         TimeSystem.OnTick += OnTickHandler;
 
 
     }
 
+    //Get the policy from GUIs
+    public void GetPolicy()
+    {
+        policy = (Policies)dropdown.GetComponent<Dropdown>().value;
+    }
+
     //Handles OnTick event
     private void OnTickHandler(object sender, TimeSystem.OnTickEventArgs e)
-    {
+    { 
         //Run female agent first in odd ticks starting with 1
-        SetOperatorAndState("female", "male");
+        //Get female operators
+        if (e.tick % 2 == 1)
+        {
+           
+            femaleOperators = gridManager.GetAgent("female").GetOperator();
+            //Get female state
+            femaleState = GetState("female", "male");
+            //Do female action
+            string femaleAction = GetAction(policy, femaleOperators, femaleState);
+            agentA.DoAction(femaleAction);
+            newFemaleOperators = gridManager.GetAgent("female").GetOperator();
+            newFemaleState = GetState("female", "male");
+            updateQTable(femaleState, femaleAction, newFemaleState, newFemaleOperators);
+        }
         //Run male agent after in even ticks
-        SetOperatorAndState("male", "female");
+        else
+        {
+            maleOperators = gridManager.GetAgent("male").GetOperator();
+            //Get male state
+            maleState = GetState("male", "female");
+            //Do male action
+            string maleAction =  GetAction(policy, maleOperators, maleState);
+            agentA.DoAction(maleAction);
+            newMaleOperators = gridManager.GetAgent("male").GetOperator();
+            newMaleState = GetState("male", "female");
+            updateQTable(maleState, maleAction, newMaleState, newMaleOperators);
+
+
+            //Display statistics
+            CountStep();
+        }
+
+        //Pause on step
+        if (stepToPause == e.tick / 2)
+        {
+            timeSystem.Pause();
+            gridManager.PauseMenu();
+        }
     }
 
     //Set the variables operators and state for agent of gender A
-    private void SetOperatorAndState(string genderA, string genderB)
+    private int[] GetState(string genderA, string genderB)
     {
+        int[] tempState = new int[8];
         //Get both A and B states as we need the both to compute distance, the B state won't be affected if A moves
         agentA = gridManager.GetAgent(genderA);
         AState = agentA.GetAgentState();
@@ -57,33 +150,164 @@ public class PolicyManager : MonoBehaviour
         //Assign pos x, posy
         for (int i = 0; i < 2; i++)
         {
-            state[i] = AState[i];
+            tempState[i] = AState[i];
         }
 
         //Assign distance
-        state[2] = Math.Abs(AState[0] - BState[0]) + Math.Abs(AState[1] - BState[1]);
+        tempState[2] = Math.Abs(AState[0] - BState[0]) + Math.Abs(AState[1] - BState[1]);
 
         //Assign carrying
-        state[3] = AState[3];
+        tempState[3] = AState[2];
 
 
-        //Get operators and zone states. These may be affected after male moves
-        operators = agentA.GetOperator();
+        //Get Zone states. These may be affected after other agent moves
         zoneState = gridManager.GetZoneState();
 
         //If agent not carrying block
         if (AState[2] == 0)
         {
-            state[4] = zoneState[0]; //Pickup zone
-            state[5] = zoneState[1]; //Pickup zone
-            state[6] = 0; //Irrelevant
-            state[7] = 0; //Irrelevant
+            tempState[4] = zoneState[0]; //Pickup zone
+            tempState[5] = zoneState[1]; //Pickup zone
+            tempState[6] = 0; //Irrelevant
+            tempState[7] = 0; //Irrelevant
         }
         //If agent is carrying block
         else for (int i = 4; i < 8; i++)
             {
-                state[i] = zoneState[i - 2]; //Dropoff zones
+                tempState[i] = zoneState[i - 2]; //Dropoff zones
             }
+        return tempState;
     }
 
+    private string GetAction(Policies policy, List<string> operators, int[] state)
+    {
+        //Pickup/Dropoff
+        if (operators.Contains("p"))
+        {
+            return "p";
+        }
+        if (operators.Contains("d"))
+        {
+            return "d";
+        }
+        //Movement
+        if (policy == Policies.PRANDOM)
+        {
+            var random = new System.Random();
+            int index = random.Next(operators.Count);
+            return operators[index];
+        }
+        else
+        {
+            double q; //qValue
+            List<double> qValue = new List<double>(); //List of all qValue
+            //Add all operators' qValue
+            foreach (string op in operators)
+            {
+                if (!Qtable.ContainsKey(GetKey(op, state)))
+                    q = 0;
+                else q = Qtable[GetKey(op, state)];
+                qValue.Add(q);
+            }
+            //Get operator with highest qValue
+            int maxIndex = qValue.IndexOf(qValue.Max());
+            if (policy == Policies.PGREEDY)
+            {
+                return operators[maxIndex];
+            }
+            else
+            {
+                System.Random r = new System.Random();
+                int rInt = r.Next(0, 100); //for ints
+                if (rInt <= 80)
+                    return operators[maxIndex];
+                else
+                {
+                    //Make temp operator list
+                    List<string> tempOp = new List<string>(operators);
+                    //Remove max index
+                    tempOp.RemoveAt(maxIndex);
+                    //Choose at random
+                    var random = new System.Random();
+                    int index = random.Next(tempOp.Count);
+                    return tempOp[index];
+                }
+
+            }
+        }
+    }
+
+    //Update Qtable
+    private void updateQTable(int[] oldState, string op, int[] newState, List<string> newOperators)
+    {
+
+        int reward = -1;
+        if (op == "d" || op == "p")
+        {
+            reward = 13;
+        }
+
+        double maxQValue = findMaxQValue(newOperators, newState);
+
+        if (!Qtable.ContainsKey(GetKey(op, oldState)))
+        {
+            Qtable[GetKey(op, oldState)] = 0;
+        }
+        Qtable[GetKey(op, oldState)] = (1 - learningRate) * Qtable[GetKey(op, oldState)] + learningRate*(reward + discountRate * maxQValue);
+    }
+       
+
+    private double findMaxQValue(List<string> operators, int[] state)
+    {
+        double q; //qValue
+        List<double> qValue = new List<double>(); //List of all qValue
+                                            //Add all operators' qValue
+        foreach (string op in operators)
+        {
+            if (!Qtable.ContainsKey(GetKey(op, state)))
+                q = 0;
+            else q = Qtable[GetKey(op, state)];
+            qValue.Add(q);
+        }
+        //Get highest qValue
+        return qValue.Max();
+    }
+
+
+
+    //Get Qtable Key
+    private string GetKey(string op, int[] state)
+    {
+        string key = op;
+        foreach (int i in state)
+            key += i;
+        return key;
+    }
+
+    private void CountStep()
+    {
+        switch (policy)
+        {
+            case Policies.PRANDOM:
+                randomSteps.text = "Step: " + ++randomStep;
+                break;
+            case Policies.PGREEDY:
+                greedySteps.text = "Step: " + ++greedyStep;
+                break;
+            case Policies.PEXPLOIT:
+                exploitSteps.text = "Step: " + ++exploitStep;
+                break;
+
+        }
+    }
+
+    public void CountTerminal()
+    {
+        terminations.text = "Terminations: " + ++termination;
+    }
+
+    public void PauseOnStep()
+    {
+        stepToPause = Int32.Parse(stepInputField.GetComponent<Text>().text);
+    }
 }

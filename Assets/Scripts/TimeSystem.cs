@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class TimeSystem : MonoBehaviour
 {
     [SerializeField] private Text timer;
+
     private bool paused = true;
 
     public class OnTickEventArgs: EventArgs
@@ -38,9 +39,10 @@ public class TimeSystem : MonoBehaviour
                 tickTimer -= tick_timer_max;
                 tick++;
                 OnTick?.Invoke(this, new OnTickEventArgs { tick = tick });
-                timer.text = "Time: " + tick.ToString();
+                timer.text = "Step: " + (tick/2).ToString();
             }
         }
+      
     }
 
     public float GetMaxTickTimer() //Let agents access the tick timer so they can move at speed relative to the global tick time

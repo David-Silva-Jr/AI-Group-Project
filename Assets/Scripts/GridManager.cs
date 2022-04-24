@@ -18,18 +18,31 @@ public class GridManager : MonoBehaviour
     [SerializeField] private GameObject dropoffInputField;
 
     private bool paused = true;
+    private bool pauseTerminal = false;
 
     private  PickupZone[] pickupZones = new PickupZone[2]; //2 pickup zones
-    private DropoffZone[] dropoffZones = new DropoffZone[6]; //4 dropoff zones
+    private DropoffZone[] dropoffZones = new DropoffZone[4]; //4 dropoff zones
     private int currZone; //Index of current zone
     private Cell currentCell;
     private string placing = null;
     private Agent maleAgent;
     private Agent femaleAgent;
 
+    //For checking terminal
+    private int[] zoneState;
+    private bool terminal;
+    TimeSystem timeSystem;
+
+    //Initial values
+    private int[] pickupVal = new int[2]; //2 initial pickup vals
+    private int[] dropoffVal = new int[4]; //4 initial dropoff vals
+    private Cell femaleStartingCell;
+    private Cell maleStartingCell;
+
     private void Start()
     {
         grid = FindObjectOfType<Grid>();
+        timeSystem = FindObjectOfType<TimeSystem>();
     }
 
     private void Update()
@@ -61,11 +74,13 @@ public class GridManager : MonoBehaviour
                         if (femaleAgent == null)
                         {
                             femaleAgent = currentCell.PlaceAgent("female");
+                            femaleStartingCell = currentCell;
                             //send to policymanager as well
                         }  
                         else if (maleAgent == null)
                         {
                             maleAgent = currentCell.PlaceAgent("male");
+                            maleStartingCell = currentCell;
                         }
                         break;
                     case "DeleteAgent":
@@ -80,7 +95,7 @@ public class GridManager : MonoBehaviour
                                 if (pickupZones[i] != null) //If what we just placed isn't null
                                 {
                                     pickupPopup.SetActive(true);
-                                    Pause(); //Pause until PickupPopup is resolved
+                                    PauseMenu(); //Pause until PickupPopup is resolved
                                     currZone = i; //Set this value to i to be used in assigning nPickups
                                     break;
                                 }
@@ -96,7 +111,7 @@ public class GridManager : MonoBehaviour
                                 if (dropoffZones[i] != null) //If what we just placed isn't null
                                 {
                                     dropoffPopup.SetActive(true);
-                                    Pause(); //Pause until dropoffPopup is resolved
+                                    PauseMenu(); //Pause until dropoffPopup is resolved
                                     currZone = i; //Set this value to i to be used in assigning nDropoff
                                     break;
                                 }
@@ -110,7 +125,42 @@ public class GridManager : MonoBehaviour
                         break;
                 }
         }
+
+        else //Not paused
+        {
+            //Checking for terminal state
+            zoneState = GetZoneState();
+            terminal = true;
+            foreach (int zone in zoneState)
+            {
+                if (zone == 1)
+                    terminal = false;
+            }
+            //Terminate, pause and reset
+            if (terminal)
+            {
+                if (pauseTerminal)
+                {
+                    //Pause game
+                    timeSystem.Pause();
+                    //Unpause menu
+                    PauseMenu();
+                }
+                //Increase termination count
+                GetComponent<PolicyManager>().CountTerminal();
+                //Reset pickup/dropoff
+                for (int i = 0; i < 2; i++)
+                    pickupZones[i].GetComponent<PickupZone>().SetnPickups(pickupVal[i]);
+
+                for (int i = 0; i < 4; i++)
+                    dropoffZones[i].GetComponent<DropoffZone>().SetnDropoffs(dropoffVal[i]);
+                //Reset agent location
+                maleAgent.MoveTo(maleStartingCell);
+                femaleAgent.MoveTo(femaleStartingCell);
+            }
+        }
        
+
     }
 
     //Popup window asking user to input number of pickup objects for zone
@@ -118,8 +168,10 @@ public class GridManager : MonoBehaviour
     {
         int nPickups = Int32.Parse(pickupInputField.GetComponent<Text>().text);
         pickupZones[currZone].GetComponent<PickupZone>().SetnPickups(nPickups);
+        //Set initial val
+        pickupVal[currZone] = nPickups;
         pickupPopup.SetActive(false);
-        Pause();
+        PauseMenu();
     }
 
     //Popup window asking user to input capacity for dropoff zone
@@ -127,8 +179,10 @@ public class GridManager : MonoBehaviour
     {
         int nDropoffs = Int32.Parse(dropoffInputField.GetComponent<Text>().text);
         dropoffZones[currZone].GetComponent<DropoffZone>().SetnDropoffs(nDropoffs);
+        //Set initial val
+        dropoffVal[currZone] = nDropoffs;
         dropoffPopup.SetActive(false);
-        Pause();
+        PauseMenu();
     }
 
     //Return the cell component of the clicked cell
@@ -163,9 +217,14 @@ public class GridManager : MonoBehaviour
         placing = objectToPlace;
     }
 
-    //Pause when window pops up
-    public void Pause()
+    //PauseMenu when window pops up
+    public void PauseMenu()
     {
         paused = !paused;
+    }
+
+    public void pauseWhenTerminal()
+    {
+        pauseTerminal = !pauseTerminal;
     }
 }

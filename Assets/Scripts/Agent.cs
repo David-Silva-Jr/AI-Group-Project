@@ -100,13 +100,51 @@ public class Agent : MonoBehaviour
                 operators.Add(((direction)i).ToString()); //Add a move to that ground to operator list
         }
 
-        
+
 
         //Add pickup and dropoff operators if available
-        if (GameObject.Find("(X: " + (posX).ToString() + "Y: " + (posY).ToString() + ")").GetComponent<Cell>().GetZone() != null)
-            operators.Add(GameObject.Find("(X: " + (posX).ToString() + "Y: " + (posY).ToString() + ")").GetComponent<Cell>().GetZone());
+        string zoneOperator = GameObject.Find("(X: " + (posX).ToString() + "Y: " + (posY).ToString() + ")").GetComponent<Cell>().GetZoneOperator();
+        if ((zoneOperator == "p" && carrying == 0) || (zoneOperator == "d" && carrying == 1))
+            operators.Add(zoneOperator);
 
         return operators;
+    }
+
+    public void DoAction(string action)
+    {
+        switch (action)
+        {
+            case "p":
+                GameObject.Find("(X: " + (posX).ToString() + "Y: " + (posY).ToString() + ")").GetComponent<Cell>().ZoneAction(action);
+                carrying = 1;
+                break;
+            case "d":
+                GameObject.Find("(X: " + (posX).ToString() + "Y: " + (posY).ToString() + ")").GetComponent<Cell>().ZoneAction(action);
+                carrying = 0;
+                break;
+            case "n":
+                MoveTo(moves[0].GetComponent<Cell>());
+                break;
+            case "e":
+                MoveTo(moves[1].GetComponent<Cell>());
+                break;
+            case "s":
+                MoveTo(moves[2].GetComponent<Cell>());
+                break;
+            case "w":
+                MoveTo(moves[3].GetComponent<Cell>());
+                break;
+        }
+ 
+    }
+
+    public void MoveTo(Cell destination)
+    {
+        t = 0;
+        startPosition = transform.position;
+        transform.SetParent(destination.GetGround());
+        posX = destination.GetPosition().x;
+        posY = destination.GetPosition().y;
     }
 
     public int[] GetAgentState()

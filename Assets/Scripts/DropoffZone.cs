@@ -22,4 +22,10 @@ public class DropoffZone : MonoBehaviour
             return 1;
         else return 0;
     }
+
+    public void Dropoff()
+    {
+        nDropoffs--;
+        display.text = nDropoffs.ToString();
+    }
 }
