@@ -10,7 +10,8 @@ using System.Linq;
 public class PolicyManager : MonoBehaviour
 {
 
-    [SerializeField] private GameObject dropdown;
+    [SerializeField] private GameObject policyDropdown;
+    [SerializeField] private GameObject formulaDropdown;
     [SerializeField] private GameObject stepInputField;
 
     private Dictionary<string, double> Qtable = new Dictionary<string, double>();
@@ -88,7 +89,13 @@ public class PolicyManager : MonoBehaviour
     //Get the policy from GUIs
     public void GetPolicy()
     {
-        policy = (Policies)dropdown.GetComponent<Dropdown>().value;
+        policy = (Policies)policyDropdown.GetComponent<Dropdown>().value;
+    }
+
+    //Get the formula from GUIs
+    public void GetFormula()
+    {
+        formula = (Formulas)formulaDropdown.GetComponent<Dropdown>().value;
     }
 
     //Handles OnTick event
@@ -247,15 +254,34 @@ public class PolicyManager : MonoBehaviour
             reward = 13;
         }
 
-        double maxQValue = findMaxQValue(newOperators, newState);
-
-        if (!Qtable.ContainsKey(GetKey(op, oldState)))
+        if (formula == Formulas.QLEARNING)
         {
-            Qtable[GetKey(op, oldState)] = 0;
+            double maxQValue = findMaxQValue(newOperators, newState);
+
+            if (!Qtable.ContainsKey(GetKey(op, oldState)))
+            {
+                Qtable[GetKey(op, oldState)] = 0;
+            }
+            Qtable[GetKey(op, oldState)] = (1 - learningRate) * Qtable[GetKey(op, oldState)] + learningRate * (reward + discountRate * maxQValue);
         }
-        Qtable[GetKey(op, oldState)] = (1 - learningRate) * Qtable[GetKey(op, oldState)] + learningRate*(reward + discountRate * maxQValue);
+        else
+        {
+            if (!Qtable.ContainsKey(GetKey(op, oldState)))
+            {
+                Qtable[GetKey(op, oldState)] = 0;
+            }
+
+            string newOp = GetAction(policy, newOperators, newState);
+
+            if (!Qtable.ContainsKey(GetKey(newOp, newState)))
+            {
+                Qtable[GetKey(newOp, newState)] = 0;
+            }
+
+            Qtable[GetKey(op, oldState)] = Qtable[GetKey(op, oldState)] + learningRate * (reward + discountRate * Qtable[GetKey(newOp, newState)] - Qtable[GetKey(op, oldState)]);
+        }
     }
-       
+
 
     private double findMaxQValue(List<string> operators, int[] state)
     {
@@ -297,7 +323,6 @@ public class PolicyManager : MonoBehaviour
             case Policies.PEXPLOIT:
                 exploitSteps.text = "Step: " + ++exploitStep;
                 break;
-
         }
     }
 

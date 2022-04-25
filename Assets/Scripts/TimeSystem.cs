@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class TimeSystem : MonoBehaviour
 {
     [SerializeField] private Text timer;
+    [SerializeField] private GameObject stepTimeInputField;
 
     private bool paused = true;
 
@@ -53,5 +54,15 @@ public class TimeSystem : MonoBehaviour
     public void Pause()
     {
         paused = !paused;
+    }
+
+    public void SetStepTimer()
+    {
+        tick_timer_max = float.Parse(stepTimeInputField.GetComponent<Text>().text);
+    }
+
+    public void PrintTime()
+    {
+        Debug.Log(tick / 2);
     }
 }

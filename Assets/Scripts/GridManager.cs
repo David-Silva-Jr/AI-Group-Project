@@ -139,6 +139,8 @@ public class GridManager : MonoBehaviour
             //Terminate, pause and reset
             if (terminal)
             {
+                //DebugLog time when terminal
+                timeSystem.PrintTime();
                 if (pauseTerminal)
                 {
                     //Pause game
