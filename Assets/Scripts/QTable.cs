@@ -77,8 +77,8 @@ public class QTable{
         return out_str;
     }
 
-    public void SaveToCSV(){
-        using (StreamWriter outputFile = new StreamWriter("Output\\Q-Table.txt")){
+    public void SaveToCSV(string name){
+        using (StreamWriter outputFile = new StreamWriter("Output\\" + name)){
             outputFile.WriteLine("i, j, dm, x, s, t, u, v, n, e, s, w, p, d");
             foreach(KeyValuePair<string, Dictionary<char, float>> row in table){
                 List<string> stateStuff = new List<string>(row.Key.Split(' '));

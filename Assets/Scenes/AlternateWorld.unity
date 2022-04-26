@@ -309,7 +309,7 @@ MonoBehaviour:
   d4: -5
   d4Pos: {x: 4, y: 4}
   numRandomSteps: 500
-  numTrainingSteps: 8000
+  numTrainingSteps: 7500
   timer: {fileID: 150884402}
   cube: {fileID: 233139325993543499, guid: 9f812404bfabc4d48b82072310c6cfcf, type: 3}
   matpickup: {fileID: 2100000, guid: 70ab4bcf2117c1d44bf7f1be73f21a7c, type: 2}

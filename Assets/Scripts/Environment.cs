@@ -36,6 +36,8 @@ public class Environment
     private int d3_initial;
     private int d4_initial;
 
+    bool firstDropoffFilled;
+
     // This event fires when Reset is called
     public event EventHandler ResetCalled;
 
@@ -63,6 +65,8 @@ public class Environment
         distancePerTurn = new List<int>();
 
         distancePerTurn.Add(manhattan_distance);
+
+        firstDropoffFilled = false;
     }
 
     public QTable QTable{
@@ -200,6 +204,11 @@ public class Environment
         turn++;
         distancePerTurn.Add(manhattan_distance);
 
+        if((!d1.IsDropoff || !d2.IsDropoff || !d3.IsDropoff || !d4.IsDropoff) && !firstDropoffFilled){
+            qTable.SaveToCSV("Q-Table-FirstDropoffFilledTurn" + turn + ".csv");
+            firstDropoffFilled = true;
+        }
+
         if(FinalConditionReached){
             Reset();
         }
@@ -302,6 +311,10 @@ public class Environment
 
         turnsResetCalled.Add(turn);
         ResetCalled?.Invoke(this, EventArgs.Empty);
+
+        if(turnsResetCalled.Count == 1){
+            qTable.SaveToCSV("Q-Table-Reset" + turnsResetCalled.Count + ".csv");
+        }
     }
 
     public void WriteStatsToFiles(){
@@ -329,6 +342,6 @@ public class Environment
             }
         }
 
-        qTable.SaveToCSV();
+        qTable.SaveToCSV("Q-Table-Final.csv");
     }
 }
