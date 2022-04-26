@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Map
 {
@@ -39,5 +40,10 @@ public class Map
     // Allows access to specific map tiles by MapObject[r, c]
     public Tile this[int r, int c]{
         get{return tiles[r][c];}
+    }
+
+    // Allows access to specific map tiles by vector2int
+    public Tile this[Vector2Int pos]{
+        get{return tiles[pos.x][pos.y];}
     }
 }

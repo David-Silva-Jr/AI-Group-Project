@@ -4,18 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Formulas{
-    QLEARNING,
-    SARSA
-}
-
-public enum Policies{
-    PRANDOM,
-    PEXPLOIT,
-    PGREEDY    
-}
-
-public class RLManager : MonoBehaviour
+public class E4Visualizer : MonoBehaviour
 {
     public int mapSize;
 
@@ -70,7 +59,7 @@ public class RLManager : MonoBehaviour
     public bool drawArrows;
     public GameObject arrow;
 
-    private Environment environment;
+    private Experiment4 environment;
 
     private float t_lerp;
     private float moveTime;
@@ -98,7 +87,7 @@ public class RLManager : MonoBehaviour
         I_Policy chosen_policy = PolicyFromSelectiom(policy);
 
         // Instantiate environment
-        environment = new Environment(mapSize, mapSize, chosen_policy, chosen_formula);
+        environment = new Experiment4(mapSize, mapSize, chosen_policy, chosen_formula);
         environment.InitializePAndDValues(p1, p2, d1, d2, d3, d4);
         environment.InitializePAndDTiles(
             p1Pos,
@@ -173,6 +162,7 @@ public class RLManager : MonoBehaviour
 
         // Set up event actions
         ALT_TimeSystem.Tick += OnTick;
+        ALT_TimeSystem.Tick += UpdateTileCubesOnTick;
         environment.Male.LocationChanged += OnMaleMove;
         environment.Male.HasCargoChanged += OnMaleCargo;
 
@@ -250,6 +240,8 @@ public class RLManager : MonoBehaviour
         }
     }
 
+    // Function to set locations of agents
+
     // Can probably be sped up
     void UpdateArrowDirections(){
         for(int r = 0; r < environment.World.Height; r++){
@@ -294,7 +286,7 @@ public class RLManager : MonoBehaviour
         }
     }
 
-    void UpdateTileCubes(){
+    void UpdateTileCubesOnTick(object sender, ALT_TimeSystem.OnTickEventArgs e){
         for(int i = 0; i < mapSize; i++){
             for(int j = 0; j < mapSize; j++){
                 if(environment.World[i, j].IsPickup){
@@ -318,8 +310,6 @@ public class RLManager : MonoBehaviour
         if(drawArrows){
             UpdateArrowDirections();
         }
-
-        UpdateTileCubes();
     }
 
     // Set positions on agent move
@@ -349,5 +339,4 @@ public class RLManager : MonoBehaviour
             femaleVis.GetComponent<MeshRenderer>().sharedMaterial = matFemale;
         }
     }
-
 }

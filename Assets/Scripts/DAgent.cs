@@ -174,6 +174,37 @@ public class DAgent
         return available;
     }
 
+    // Gets list of actions which would be possible in an ideal scenario
+    public List<char> GetPossibleActions(){
+        List<char> available = new List<char>();
+
+        if(Row > 0){
+            available.Add('n');
+        }
+
+        if(Col < World.Width-1){
+            available.Add('e');
+        }
+
+        if(Row < World.Height-1){
+            available.Add('s');
+        }
+
+        if(Col > 0){
+            available.Add('w');
+        }
+
+        if(Location.IsPickup && !HasCargo){
+            available.Add('p');
+        }
+
+        if(Location.IsDropoff && HasCargo){
+            available.Add('d');
+        }
+
+        return available;
+    }
+
     // Change occupancy of tiles when agent moves
     //    Possible that this should go somewhere else as it is only tangentially related to the agent,
     // but it's just so convenient here

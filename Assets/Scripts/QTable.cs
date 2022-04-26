@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System.IO;
+using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 
 // I should probably go back and make this more general, but it'll do for now
@@ -7,7 +9,6 @@ public class QTable{
     // table[state] will return the row of the q table corresponding to that state
     // table[string, char] will return the float q-value of action char from state string    
     Dictionary<string, Dictionary<char, float>> table;
-
 
     // This constructor will generate a Q-Table for a given map, initializing all Q-Values to 0
     public QTable(Map _map){
@@ -74,6 +75,29 @@ public class QTable{
         }
 
         return out_str;
+    }
+
+    public void SaveToCSV(){
+        using (StreamWriter outputFile = new StreamWriter("Output\\Q-Table.txt")){
+            outputFile.WriteLine("i, j, dm, x, s, t, u, v, n, e, s, w, p, d");
+            foreach(KeyValuePair<string, Dictionary<char, float>> row in table){
+                List<string> stateStuff = new List<string>(row.Key.Split(' '));
+
+                string line = stateStuff[0];
+                foreach(string s in stateStuff.Skip(1)){
+                    line += ", " + s;
+                }
+
+                foreach(KeyValuePair<char, float> op in row.Value){
+                    line += ", " + op.Value;
+                }
+                outputFile.WriteLine(line);
+            }
+        }
+    }
+
+    public char MostValuableAction(string state_as_string){
+        return table[state_as_string].Where(e => e.Value == table[state_as_string].Values.Max()).First().Key;
     }
 
     // Return dictionary corresponding to row of Q-Table for a given state
