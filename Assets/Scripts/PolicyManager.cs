@@ -14,6 +14,9 @@ public class PolicyManager : MonoBehaviour
     [SerializeField] private GameObject formulaDropdown;
     [SerializeField] private GameObject stepInputField;
 
+    [SerializeField] private GameObject discountInputField;
+    [SerializeField] private GameObject learningInputField;
+
     private Dictionary<string, double> Qtable = new Dictionary<string, double>();
 
     int endstep;
@@ -51,8 +54,8 @@ public class PolicyManager : MonoBehaviour
     //Policy values
     public Formulas formula;
     public Policies policy;
-    public float learningRate;
-    public float discountRate;
+    private float learningRate;
+    private float discountRate;
 
     //States of agent only
     Agent agentA;
@@ -333,6 +336,16 @@ public class PolicyManager : MonoBehaviour
         }
     }
 
+    public void SetLearningRate()
+    {
+        learningRate = float.Parse(learningInputField.GetComponent<Text>().text);
+    }
+
+    public void SetDiscountRate()
+    {
+        discountRate = float.Parse(discountInputField.GetComponent<Text>().text);
+    }
+
     public void CountTerminal()
     {
         terminations.text = "Terminations: " + ++termination;
@@ -350,5 +363,6 @@ public class PolicyManager : MonoBehaviour
         avgManhattan = (double)totalManhattan / (double)Manhattancount;
         ManhattanText.text = "Average Manhattan Distance: " + avgManhattan;
     }
+
 
 }

@@ -84,13 +84,14 @@ public class Agent : MonoBehaviour
 
         for(int i = 0;i < 4; i++)
         {
-            Transform ground = moves[i].GetComponent<Cell>().GetGround();
-            //If there is ground not occupied by another agent
-            if (moves[i] != null && ground != null && ground.childCount == 4)
-                operators.Add(((direction)i).ToString()); //Add a move to that ground to operator list
+            if(moves[i] != null)
+            {
+                Transform ground = moves[i].GetComponent<Cell>().GetGround();
+                //If there is ground not occupied by another agent
+                if (moves[i] != null && ground != null && ground.childCount == 4)
+                    operators.Add(((direction)i).ToString()); //Add a move to that ground to operator list
+            }
         }
-
-
 
         //Add pickup and dropoff operators if available
         string zoneOperator = GameObject.Find("(X: " + (posX).ToString() + "Y: " + (posY).ToString() + ")").GetComponent<Cell>().GetZoneOperator();
