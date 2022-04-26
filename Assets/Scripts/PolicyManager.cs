@@ -16,7 +16,14 @@ public class PolicyManager : MonoBehaviour
 
     private Dictionary<string, double> Qtable = new Dictionary<string, double>();
 
-    int endstep = 500;
+    int endstep;
+
+    //Manhattan
+    int totalManhattan = 0;
+    int Manhattancount = 0;
+    double avgManhattan = 0;
+    [SerializeField] private Text ManhattanText;
+
     public enum Formulas
     {
         QLEARNING,
@@ -62,10 +69,10 @@ public class PolicyManager : MonoBehaviour
 
     int[] zoneState;//State of zones only
 
-    int[] femaleState = new int[8]; //Full state (posx,posy,carrying,distance,pickup/dropoff,pickup/dropoff,irrelevant/dropoff,irrelevant/dropoff)
+    int[] femaleState = new int[8]; //Full state (posx,posy,distance,carrying,pickup/dropoff,pickup/dropoff,irrelevant/dropoff,irrelevant/dropoff)
     int[] newFemaleState = new int[8];
 
-    int[] maleState = new int[8]; //Full state (posx,posy,carrying,distance,pickup/dropoff,pickup/dropoff,irrelevant/dropoff,irrelevant/dropoff)
+    int[] maleState = new int[8]; //Full state (posx,posy,distance,carrying,pickup/dropoff,pickup/dropoff,irrelevant/dropoff,irrelevant/dropoff)
     int[] newMaleState = new int[8];
 
     GridManager gridManager;
@@ -128,7 +135,7 @@ public class PolicyManager : MonoBehaviour
             newMaleOperators = gridManager.GetAgent("male").GetOperator();
             newMaleState = GetState("male", "female");
             updateQTable(maleState, maleAction, newMaleState, newMaleOperators);
-
+            AvgManhattan();
 
             //Display statistics
             CountStep();
@@ -335,4 +342,13 @@ public class PolicyManager : MonoBehaviour
     {
         stepToPause = Int32.Parse(stepInputField.GetComponent<Text>().text);
     }
+
+    private void AvgManhattan()
+    {
+        totalManhattan += maleState[2];
+        Manhattancount++;
+        avgManhattan = (double)totalManhattan / (double)Manhattancount;
+        ManhattanText.text = "Average Manhattan Distance: " + avgManhattan;
+    }
+
 }

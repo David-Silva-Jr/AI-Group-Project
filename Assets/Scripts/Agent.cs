@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 //[On agents]
@@ -20,6 +21,12 @@ public class Agent : MonoBehaviour
     int dirIndex; //Index of selected direction
     private float timeToReachTarget;
 
+    //Bank account
+    private Text bankText;
+    private int bank = 0;
+
+    TimeSystem timeSystem;
+
     private enum direction
     {
         n,
@@ -37,11 +44,22 @@ public class Agent : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        TimeSystem timeSystem = FindObjectOfType<TimeSystem>();
+        timeSystem = FindObjectOfType<TimeSystem>();
         //The agents move twice as fast as the tick count so that they don't lag behind
-        timeToReachTarget = timeSystem.GetMaxTickTimer()/5;
+        
 
         startPosition = transform.position;
+
+
+        //Assign bank account
+        if (name.Contains("Male Agent"))
+        {
+            bankText = GameObject.Find("MBankVal").GetComponent<Text>();
+        }
+        else
+        {
+            bankText = GameObject.Find("FBankVal").GetComponent<Text>();
+        }
     }
 
     // Update is called once per frame
@@ -84,29 +102,38 @@ public class Agent : MonoBehaviour
 
     public void DoAction(string action)
     {
+        //reset agent speed
+        timeToReachTarget = timeSystem.GetMaxTickTimer() / 2;
+
         switch (action)
         {
             case "p":
                 GameObject.Find("(X: " + (posX).ToString() + "Y: " + (posY).ToString() + ")").GetComponent<Cell>().ZoneAction(action);
                 carrying = 1;
                 cargo.SetActive(true);
+                Banking(13);
                 break;
             case "d":
                 GameObject.Find("(X: " + (posX).ToString() + "Y: " + (posY).ToString() + ")").GetComponent<Cell>().ZoneAction(action);
                 carrying = 0;
                 cargo.SetActive(false);
+                Banking(13);
                 break;
             case "n":
                 MoveTo(moves[0].GetComponent<Cell>());
+                Banking(-1);
                 break;
             case "e":
                 MoveTo(moves[1].GetComponent<Cell>());
+                Banking(-1);
                 break;
             case "s":
                 MoveTo(moves[2].GetComponent<Cell>());
+                Banking(-1);
                 break;
             case "w":
                 MoveTo(moves[3].GetComponent<Cell>());
+                Banking(-1);
                 break;
         }
  
@@ -125,5 +152,12 @@ public class Agent : MonoBehaviour
     {
         int[] state = new int[] {posX, posY, carrying};
         return state;
+    }
+
+    //Change bank account
+    private void Banking(int change)
+    {
+        bank += change;
+        bankText.text = "bank: " + bank;
     }
 }
