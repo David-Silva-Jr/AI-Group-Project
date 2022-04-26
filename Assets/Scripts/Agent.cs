@@ -122,18 +122,22 @@ public class Agent : MonoBehaviour
             case "n":
                 MoveTo(moves[0].GetComponent<Cell>());
                 Banking(-1);
+                moves[0].GetComponent<Cell>().IncrementColor();
                 break;
             case "e":
                 MoveTo(moves[1].GetComponent<Cell>());
                 Banking(-1);
+                moves[1].GetComponent<Cell>().IncrementColor();
                 break;
             case "s":
                 MoveTo(moves[2].GetComponent<Cell>());
                 Banking(-1);
+                moves[2].GetComponent<Cell>().IncrementColor();
                 break;
             case "w":
                 MoveTo(moves[3].GetComponent<Cell>());
                 Banking(-1);
+                moves[3].GetComponent<Cell>().IncrementColor();
                 break;
         }
  

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 //[On cells]
 //The cell holds references to the grid objects on that cell (ground, agents, pickup/dropoff locations) 
 //which can then be passed to the more general GridManager
@@ -12,14 +12,30 @@ public class Cell : MonoBehaviour
     private int posX;
     private int posY;
     [SerializeField] private GameObject groundPrefab;
+    [SerializeField] private GameObject heatmapPrefab;
     [SerializeField] private GameObject pickupZonePrefab;
     [SerializeField] private GameObject dropoffZonePrefab;
     [SerializeField] private GameObject maleAgentPrefab;
     [SerializeField] private GameObject femaleAgentPrefab;
 
-    private readonly GameObject[] cellFeatures = new GameObject[2]; //Cell has 2 features Ground (0), Dropoff/Pickup zone(1)
+    private Toggle heatmapToggle;
+
+    private readonly GameObject[] cellFeatures = new GameObject[3]; //Cell has 2 features Ground (0), Dropoff/Pickup zone(1), Heatmaptile (2)
     private GameObject agent;
 
+
+    private void Start()
+    {
+        heatmapToggle = GameObject.Find("Heatmap").GetComponent<Toggle>();
+    }
+    private void Update()
+    {
+        if (cellFeatures[2] != null)
+        {
+            if (cellFeatures[2].activeSelf != heatmapToggle.isOn)
+                cellFeatures[2].SetActive(heatmapToggle.isOn);
+        }
+    }
     public void SetPosition(int x, int y)
     {
         posX = x;
@@ -93,6 +109,8 @@ public class Cell : MonoBehaviour
         if (cellFeatures[0] == null) //Draw ground if ground is null
         {
             cellFeatures[0] = Instantiate(groundPrefab, transform.GetChild(0).GetComponent<Renderer>().bounds.center + Vector3.down * 3, Quaternion.identity);
+            cellFeatures[2] = Instantiate(heatmapPrefab, transform.GetChild(0).GetComponent<Renderer>().bounds.center + Vector3.down * 3 - Vector3.forward /10, Quaternion.identity);
+            cellFeatures[2].SetActive(false);
         }
     }
 
@@ -100,6 +118,7 @@ public class Cell : MonoBehaviour
     {
         Destroy(cellFeatures[0]);
         Destroy(cellFeatures[1]);
+        Destroy(cellFeatures[2]);
     }
 
     public Agent PlaceAgent(string gender)
@@ -127,7 +146,7 @@ public class Cell : MonoBehaviour
     {
         if (cellFeatures[0] != null && cellFeatures[1] == null) //Place zone if there's ground and no zone
         {
-            cellFeatures[1] = Instantiate(pickupZonePrefab, transform.GetChild(0).GetComponent<Renderer>().bounds.center + Vector3.down * 3 + Vector3.back/10, Quaternion.identity);
+            cellFeatures[1] = Instantiate(pickupZonePrefab, transform.GetChild(0).GetComponent<Renderer>().bounds.center + Vector3.down * 3 + Vector3.back/5, Quaternion.identity);
             return cellFeatures[1].GetComponent<PickupZone>();
         }
         return null;
@@ -137,7 +156,7 @@ public class Cell : MonoBehaviour
     {
         if (cellFeatures[0] != null && cellFeatures[1] == null) //Place zone if there's ground and no zone
         {
-            cellFeatures[1] = Instantiate(dropoffZonePrefab, transform.GetChild(0).GetComponent<Renderer>().bounds.center + Vector3.down * 3 + Vector3.back/10, Quaternion.identity);
+            cellFeatures[1] = Instantiate(dropoffZonePrefab, transform.GetChild(0).GetComponent<Renderer>().bounds.center + Vector3.down * 3 + Vector3.back/5, Quaternion.identity);
             return cellFeatures[1].GetComponent<DropoffZone>(); ;
         }
         return null;
@@ -146,5 +165,10 @@ public class Cell : MonoBehaviour
     public void DeleteZone()
     {
         Destroy(cellFeatures[1]);
+    }
+
+    public void IncrementColor()
+    {
+        cellFeatures[2].GetComponent<Heatmap>().IncrementColor();
     }
 }
