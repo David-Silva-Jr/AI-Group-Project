@@ -10,6 +10,9 @@ public class TimeSystem : MonoBehaviour
     [SerializeField] private Text timer;
     [SerializeField] private GameObject stepTimeInputField;
 
+    //Terminal step
+    private string terminalSteps = "";
+
     private bool paused = true;
 
     public class OnTickEventArgs: EventArgs
@@ -63,6 +66,7 @@ public class TimeSystem : MonoBehaviour
 
     public void PrintTime()
     {
-        Debug.Log(tick / 2);
+        terminalSteps += (tick / 2) + ",";
+        Debug.Log(terminalSteps);
     }
 }
