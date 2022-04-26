@@ -16,12 +16,12 @@ public class Heatmap : MonoBehaviour
 
     public void IncrementColor()
     {
-        if (color.r != 1)
-            color.r += 1f/500f;
-        else if (color.r != 1)
-            color.g += 1f / 500f;
-        else if (color.b != 1)
-            color.b += 1f / 500f;
+        if (color.r < 1)
+            color.r += 1f/300;
+        else if (color.g < 1)
+            color.g += 1f / 300;
+        else if (color.b < 1)
+            color.b += 1f / 300;
         renderer.material.color = color;
     }
 }
