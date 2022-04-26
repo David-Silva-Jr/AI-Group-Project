@@ -298,19 +298,19 @@ public class Experiment4
         }
 
         using (StreamWriter outputFile = new StreamWriter("Output\\Turns-Male-Bumped.txt")){
-            foreach(int v in turnsResetCalled){
+            foreach(int v in turnsMaleBumped){
                 outputFile.WriteLine(v);
             }
         }
 
         using (StreamWriter outputFile = new StreamWriter("Output\\Turns-Female-Bumped.txt")){
-            foreach(int v in turnsResetCalled){
+            foreach(int v in turnsFemaleBumped){
                 outputFile.WriteLine(v);
             }
         }
 
         using (StreamWriter outputFile = new StreamWriter("Output\\Manhattan-Distance.txt")){
-            foreach(int v in turnsResetCalled){
+            foreach(int v in distancePerTurn){
                 outputFile.WriteLine(v);
             }
         }
