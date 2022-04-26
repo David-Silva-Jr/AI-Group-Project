@@ -2,10 +2,9 @@
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
-
 using UnityEngine;
 
-public class Environment
+public class Experiment4
 {
     private Map world;                  // Map object holding tile data
     private QTable qTable;              // Q-Table
@@ -45,7 +44,7 @@ public class Environment
     public List<int> turnsFemaleBumped;
     public List<int> distancePerTurn;
 
-    public Environment(int world_width, int world_height, I_Policy rl_policy, I_Learning_Formula rl_formula){
+    public Experiment4(int world_width, int world_height, I_Policy rl_policy, I_Learning_Formula rl_formula){
         world = new Map(world_width, world_height);
 
         policy = rl_policy;
@@ -94,10 +93,6 @@ public class Environment
     public Tile P1{
         get{return p1;}
         set{
-            if (p1 != null){
-                value.Resources = p1.Resources;
-                p1.Resources = 0;
-            }
             p1 = value;
         }
     }
@@ -105,10 +100,6 @@ public class Environment
     public Tile P2{
         get{return p2;}
         set{
-            if (p2 != null){
-                value.Resources = p2.Resources;
-                p2.Resources = 0;
-            }
             p2 = value;
         }
     }
@@ -116,10 +107,6 @@ public class Environment
     public Tile D1{
         get{return d1;}
         set{
-            if (d1 != null){
-                value.Resources = d1.Resources;
-                d1.Resources = 0;
-            }
             d1 = value;
         }
     }
@@ -127,30 +114,18 @@ public class Environment
     public Tile D2{
         get{return d2;}
         set{
-            if (d2 != null){
-                value.Resources = d2.Resources;
-                d2.Resources = 0;
-            }
             d2 = value;
         }
     }
     public Tile D3{
         get{return d3;}
         set{
-            if (d3 != null){
-                value.Resources = d3.Resources;
-                d3.Resources = 0;
-            }
             d3 = value;
         }
     }
     public Tile D4{
         get{return d4;}
         set{
-            if (d4 != null){
-                value.Resources = d4.Resources;
-                d4.Resources = 0;
-            }
             d4 = value;
         }
     }
@@ -202,6 +177,17 @@ public class Environment
 
         if(FinalConditionReached){
             Reset();
+
+            if(turnsResetCalled.Count == 3){
+                Debug.Log("Third reset called.");
+                world[0, 1].Resources = p1.Resources;
+                p1.Resources = 0;
+                p1 = world[0, 1];
+
+                world[3, 4].Resources = p2.Resources;
+                p2.Resources = 0;
+                p2 = world[3, 4];
+            }
         }
     }
 
